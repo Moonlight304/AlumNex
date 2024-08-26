@@ -31,40 +31,6 @@ const commentSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-// Post Schema
-const postSchema = new mongoose.Schema({
-    userID: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        refPath: 'userType',
-    },
-    ...userTypeSchema,
-    username: {
-        type: String,
-        required: true,
-    },
-    content: {
-        type: String,
-        required: true,
-    },
-    tag: {
-        type: String,
-        required: true,
-        enum: ['success story', 'achievement', 'article'],
-    },
-    likeCount: {
-        type: Number,
-        default: 0,
-    },
-    likes: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            refPath: 'userType',
-        }
-    ],
-    comments: [commentSchema],
-}, { timestamps: true });
-
 // Speaker Schema
 const speakerSchema = new mongoose.Schema({
     name: {
@@ -112,14 +78,18 @@ const eventSchema = new mongoose.Schema({
     sponsors: [String],
 }, { timestamps: true });
 
-// Community Schema
-const communitySchema = new mongoose.Schema({
+// Feed FeedPost Schema
+const feedPostSchema = new mongoose.Schema({
     userID: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         refPath: 'userType',
     },
-    ...userTypeSchema,
+    userType: {
+        type: String,
+        required: true,
+        enum: ['Student', 'Alumni'],
+    },
     username: {
         type: String,
         required: true,
@@ -131,7 +101,7 @@ const communitySchema = new mongoose.Schema({
     tag: {
         type: String,
         required: true,
-        enum: ['question', 'resources', 'roadmaps'],
+        enum: ['success story', 'achievement', 'article']
     },
     likeCount: {
         type: Number,
@@ -143,7 +113,83 @@ const communitySchema = new mongoose.Schema({
             refPath: 'userType',
         }
     ],
-    comments: [commentSchema],
+    comments: [commentSchema]
+}, { timestamps: true });
+
+// Community FeedPost Schema
+const communityPostSchema = new mongoose.Schema({
+    communityID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Community',
+        required: true,
+    },
+    userID: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        refPath: 'userType',
+    },
+    userType: {
+        type: String,
+        required: true,
+        enum: ['Student', 'Alumni'],
+    },
+    username: {
+        type: String,
+        required: true,
+    },
+    content: {
+        type: String,
+        required: true,
+    },
+    tag: {
+        type: String,
+        required: true,
+        enum: ['question', 'resources', 'roadmaps']
+    },
+    likeCount: {
+        type: Number,
+        default: 0,
+    },
+    likes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            refPath: 'userType',
+        }
+    ],
+    comments: [commentSchema]
+}, { timestamps: true });
+
+// Community Schema
+const communitySchema = new mongoose.Schema({
+    userID: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        refPath: 'userType',
+    },
+    ...userTypeSchema,
+    createdBy: {
+        type: String,
+        required: true,
+    },
+    name: {
+        type : String,
+        required: true,
+        unique: true,
+    },
+    description: {
+        type: String,
+        required: true,
+    },
+    members : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            refPath: 'userType',
+        }
+    ],
+    memberCount : {
+        type : Number,
+        default: 0,
+    }
 }, { timestamps: true });
 
 // Job Schema
@@ -229,12 +275,25 @@ const studentSchema = new mongoose.Schema({
             refPath: 'userType',
         }
     ],
-    posts: [
+    feedPosts: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Post',
+            ref: 'FeedPost',
         }
     ],
+    communities : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Community',
+        }
+    ],
+    communityPosts : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'CommunityPost',
+        }
+    ],
+    comments: [commentSchema]
 });
 
 // Alumni Schema
@@ -302,10 +361,10 @@ const alumniSchema = new mongoose.Schema({
             refPath: 'userType',
         }
     ],
-    posts: [
+    feedPosts: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Post',
+            ref: 'FeedPost',
         }
     ],
     jobs: [
@@ -313,15 +372,29 @@ const alumniSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Job',
         }
-    ]
+    ],
+    communities : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Community',
+        }
+    ],
+    communityPosts : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'CommunityPost',
+        }
+    ],
+    comments: [commentSchema]
 });
 
 // Models
 const Student = mongoose.model('Student', studentSchema);
 const Alumni = mongoose.model('Alumni', alumniSchema);
-const Post = mongoose.model('Post', postSchema);
+const FeedPost = mongoose.model('FeedPost', feedPostSchema);
 const Event = mongoose.model('Event', eventSchema);
 const Community = mongoose.model('Community', communitySchema);
+const CommunityPost = mongoose.model('CommunityPost', communityPostSchema);
 const Job = mongoose.model('Job', jobSchema);
 
-module.exports = { Student, Alumni, Post, Event, Community, Job };
+module.exports = { Student, Alumni, FeedPost, Event, Community, CommunityPost, Job };

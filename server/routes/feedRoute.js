@@ -10,18 +10,19 @@ router.use(cookieParser());
 router.use(cors({ origin: process.env.frontendURL, credentials: true }));
 
 const authMiddle = require('../middleware/authMiddle.js');
-const { Student, Alumni, Post } = require('../models/db.js');
+const { Student, Alumni, FeedPost } = require('../models/db.js');
 
+// get all posts in feed
 router.get('/', authMiddle, async (req, res) => {
     try {
         const filters = req.query.filters ? req.query.filters.split(',') : [];
 
         const filterQuery = {};
         if (filters.length) {
-            filterQuery = { tag: { $in: filters } };
+            filterQuery = { tag: { $in: filters }};
         }
 
-        const allPosts = await Post.find(filterQuery).sort({ createdAt: -1 });
+        const allPosts = await FeedPost.find(filterQuery).sort({ createdAt: -1 });
 
         return res.json({
             status: 'success',
@@ -37,17 +38,20 @@ router.get('/', authMiddle, async (req, res) => {
     }
 });
 
-router.get('/:postID', authMiddle, async (req, res) => {
-    try {
-        const { postID } = req.params;
 
-        if (!postID)
+// CRUD
+
+router.get('/:feedPostID', authMiddle, async (req, res) => {
+    try {
+        const { feedPostID } = req.params;
+
+        if (!feedPostID)
             return res.json({
                 status: 'fail',
-                message: 'postID is required',
+                message: 'feedPostID is required',
             })
 
-        const post = await Post.findById(postID);
+        const post = await FeedPost.findById(feedPostID);
 
         if (!post)
             return res.json({
@@ -73,8 +77,6 @@ router.post('/newPost', authMiddle, async (req, res) => {
         const { userID, username, userType} = req.user;
         const { content, tag } = req.body;
 
-        console.log(req.body);
-
         if (!userID || !userType || !username || !content || !tag)
             return res.json({
                 status: 'fail',
@@ -88,19 +90,18 @@ router.post('/newPost', authMiddle, async (req, res) => {
             });
         }
 
-        const newPost = new Post({ userID, userType, username, content, tag });
+        const newPost = new FeedPost({ userID, userType, username, content, tag });
         const savedPost = await newPost.save();
 
         const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
 
-        if (!user) {
+        if (!user)
             return res.json({
                 status: 'fail',
                 message: 'User not found.',
             });
-        }
 
-        user.posts.push(savedPost._id);
+        user.feedPosts.unshift(savedPost._id);
         await user.save();
 
         return res.json({
@@ -116,16 +117,16 @@ router.post('/newPost', authMiddle, async (req, res) => {
     }
 });
 
-router.post('/editPost/:postID', authMiddle, async (req, res) => {
+router.post('/editPost/:feedPostID', authMiddle, async (req, res) => {
     try {
         const { userID, userType} = req.user;
-        const { postID } = req.params;
+        const { feedPostID } = req.params;
         const { newContent, newTag } = req.body;
-            
-        if (!postID)
+        
+        if (!feedPostID)
             return res.json({
                 status: 'fail',
-                message: 'postID is required',
+                message: 'feedPostID is required',
             })
 
         if (!newContent || !newTag) {
@@ -135,7 +136,7 @@ router.post('/editPost/:postID', authMiddle, async (req, res) => {
             })
         }
 
-        const post = await Post.findById(postID);
+        const post = await FeedPost.findById(feedPostID);
 
         if (!post)
             return res.json({
@@ -157,7 +158,7 @@ router.post('/editPost/:postID', authMiddle, async (req, res) => {
 
         return res.json({
             status: 'success',
-            message: 'Edited Post',
+            message: 'Edited FeedPost',
         });
     }
     catch (e) {
@@ -168,18 +169,18 @@ router.post('/editPost/:postID', authMiddle, async (req, res) => {
     }
 })
 
-router.delete('/deletePost/:postID', authMiddle, async (req, res) => {
+router.delete('/deletePost/:feedPostID', authMiddle, async (req, res) => {
     try {
         const { userID, userType} = req.user;
-        const { postID } = req.params;
+        const { feedPostID } = req.params;
 
-        if (!postID)
+        if (!feedPostID)
             return res.json({
                 status: 'fail',
-                message: 'postID is required',
+                message: 'feedPostID is required',
             })
 
-        const post = await Post.findById(postID);
+        const post = await FeedPost.findById(feedPostID);
 
         if (!post)
             return res.json({
@@ -193,13 +194,13 @@ router.delete('/deletePost/:postID', authMiddle, async (req, res) => {
                 message: 'cannot delete others posts',
             })
 
-        await Post.deleteOne({ _id: postID });
+        await FeedPost.deleteOne({ _id: feedPostID });
 
         const UserModel = userType === 'Student' ? Student : Alumni;
 
         await UserModel.updateOne(
             { _id: userID },
-            { $pull: { posts: postID } }
+            { $pull: { feedPosts: feedPostID } }
         );
 
         return res.json({
@@ -215,18 +216,21 @@ router.delete('/deletePost/:postID', authMiddle, async (req, res) => {
     }
 })
 
-router.get('/like/:postID', authMiddle, async (req, res) => {
+
+// like and dislike
+
+router.get('/like/:feedPostID', authMiddle, async (req, res) => {
     try {
         const { userID } = req.user;
-        const { postID } = req.params;
+        const { feedPostID } = req.params;
 
-        if (!postID)
+        if (!feedPostID)
             return res.json({
                 status: 'fail',
-                message: 'postID is required',
+                message: 'feedPostID is required',
             });
 
-        const post = await Post.findById(postID);
+        const post = await FeedPost.findById(feedPostID);
 
         if (!post)
             return res.json({
@@ -241,8 +245,8 @@ router.get('/like/:postID', authMiddle, async (req, res) => {
             })
 
         //update likecount and like array in post
-        await Post.updateOne(
-            { _id: postID },
+        await FeedPost.updateOne(
+            { _id: feedPostID },
             {
                 $push: { likes: userID },
                 $inc: { likeCount: 1 },
@@ -263,18 +267,18 @@ router.get('/like/:postID', authMiddle, async (req, res) => {
     }
 })
 
-router.get('/dislike/:postID', authMiddle, async (req, res) => {
+router.get('/dislike/:feedPostID', authMiddle, async (req, res) => {
     try {
         const { userID } = req.user;
-        const { postID } = req.params;
+        const { feedPostID } = req.params;
 
-        if (!postID)
+        if (!feedPostID)
             return res.json({
                 status: 'fail',
-                message: 'postID is required',
+                message: 'feedPostID is required',
             })
 
-        const post = await Post.findById(postID);
+        const post = await FeedPost.findById(feedPostID);
 
         if (!post)
             return res.json({
@@ -289,8 +293,8 @@ router.get('/dislike/:postID', authMiddle, async (req, res) => {
             })
 
         //update likecount and like array in post
-        await Post.updateOne(
-            { _id: postID },
+        await FeedPost.updateOne(
+            { _id: feedPostID },
             {
                 $pull: { likes: userID },
                 $inc: { likeCount: -1 },
@@ -311,15 +315,15 @@ router.get('/dislike/:postID', authMiddle, async (req, res) => {
     }
 })
 
-router.get('/:postID/checkLiked', authMiddle, async (req, res) => {
+router.get('/:feedPostID/checkLiked', authMiddle, async (req, res) => {
     try {
         const { userID } = req.user;
-        const { postID } = req.params;
+        const { feedPostID } = req.params;
 
-        if (!postID)
+        if (!feedPostID)
             return res.json({
                 status: 'fail',
-                message: 'postID not found',
+                message: 'feedPostID not found',
             })
 
         if (!userID)
@@ -328,7 +332,7 @@ router.get('/:postID/checkLiked', authMiddle, async (req, res) => {
                 message: 'userID not found',
             })
 
-        const post = await Post.findById(postID);
+        const post = await FeedPost.findById(feedPostID);
 
         if (!post)
             return res.json({
@@ -356,18 +360,21 @@ router.get('/:postID/checkLiked', authMiddle, async (req, res) => {
     }
 })
 
-router.get('/:postID/comments', authMiddle, async (req, res) => {
+
+// comments
+
+router.get('/:feedPostID/comments', authMiddle, async (req, res) => {
     try {
         const { userID } = req.user;
-        const { postID } = req.params;
+        const { feedPostID } = req.params;
 
-        if (!postID)
+        if (!feedPostID)
             return res.json({
                 status: 'fail',
-                message: 'postID is required',
+                message: 'feedPostID is required',
             })
 
-        const post = await Post.findById(postID);
+        const post = await FeedPost.findById(feedPostID);
 
         if (!post)
             return res.json({
@@ -389,16 +396,16 @@ router.get('/:postID/comments', authMiddle, async (req, res) => {
     }
 })
 
-router.post('/:postID/newComment', authMiddle, async (req, res) => {
+router.post('/:feedPostID/comments/newComment', authMiddle, async (req, res) => {
     try {
         const { userID, username, userType } = req.user;
-        const { postID } = req.params;
+        const { feedPostID } = req.params;
         const { newComment } = req.body;
 
-        if (!postID)
+        if (!feedPostID)
             return res.json({
                 status: 'fail',
-                message: 'postID is required',
+                message: 'feedPostID is required',
             })
 
         if (!newComment)
@@ -407,7 +414,7 @@ router.post('/:postID/newComment', authMiddle, async (req, res) => {
                 message: 'no comment text entered',
             })
 
-        const post = await Post.findById(postID);
+        const post = await FeedPost.findById(feedPostID);
 
         if (!post)
             return res.json({
@@ -422,11 +429,21 @@ router.post('/:postID/newComment', authMiddle, async (req, res) => {
             username: username,
             content: newComment,
         };
+        
+        const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
+        if (!user)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'User not found.',
+            });
 
         post.comments.unshift(comment);
         await post.save();
 
-        return res.json({
+        user.comments.unshift(comment);
+        await user.save();
+
+        return res.status(201).json({
             status: 'success',
             message: 'Saved comment',
         })
@@ -439,22 +456,22 @@ router.post('/:postID/newComment', authMiddle, async (req, res) => {
     }
 })
 
-router.get('/:postID/deleteComment/:commentID', authMiddle, async (req, res) => {
+router.delete('/:feedPostID/comments/deleteComment/:commentID', authMiddle, async (req, res) => {
     try {
-        const { userID } = req.user;
-        const { postID, commentID } = req.params;
+        const { userID, userType } = req.user;
+        const { feedPostID, commentID } = req.params;
 
-        if (!postID || !commentID)
+        if (!feedPostID || !commentID)
             return res.json({
                 status: 'fail',
-                message: 'Both postID and commentID are required',
+                message: 'Both feedPostID and commentID are required',
             });
 
-        const post = await Post.findById(postID);
+        const post = await FeedPost.findById(feedPostID);
         if (!post)
             return res.json({
                 status: 'fail',
-                message: 'Post not found',
+                message: 'FeedPost not found',
             });
 
         const commentToBeDeleted = post.comments.find(
@@ -467,34 +484,41 @@ router.get('/:postID/deleteComment/:commentID', authMiddle, async (req, res) => 
                 message: 'Comment not found',
             });
 
-        if (commentToBeDeleted.author.toString() !== userID.toString())
+        if (commentToBeDeleted.userID.toString() !== userID.toString())
             return res.json({
                 status: 'fail',
                 message: 'You cannot delete others comments',
             });
 
-        const deletePostUpdateResult = await Post.updateOne(
-            { _id: postID },
+        const UserModel = userType === 'Student' ? Student : Alumni;
+        const user = await UserModel.findById(userID);
+        if (!user)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'User not found.',
+            });
+
+        await FeedPost.updateOne(
+            { _id: feedPostID },
             { $pull: { comments: { _id: commentID } } }
         );
-        if (deletePostUpdateResult.modifiedCount === 0) {
-            return res.json({
-                status: 'fail',
-                message: 'Failed to delete comment from post',
-            });
-        }
 
-        return res.json({
+        await UserModel.updateOne(
+            { _id: userID },
+            { $pull: { comments: commentID } }
+        );
+
+        return res.status(200).json({
             status: 'success',
             message: 'Comment deleted successfully',
         });
-    }
-    catch (e) {
+    } catch (e) {
         return res.status(500).json({
             status: 'fail',
-            message: e.message
+            message: e.message,
         });
     }
 });
+
 
 module.exports = router;

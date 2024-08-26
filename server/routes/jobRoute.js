@@ -114,7 +114,7 @@ router.post('/newJob', authMiddle, async (req, res) => {
             });
         }
         
-        alumni.jobs.push(savedJob._id);
+        alumni.jobs.unshift(savedJob._id);
         await alumni.save();
 
         return res.json({
@@ -180,7 +180,7 @@ router.post('/editJob/:jobID', authMiddle, async (req, res) => {
 
         return res.json({
             status: 'success',
-            message: 'Edited Post',
+            message: 'Edited FeedPost',
         });
     }
     catch (e) {

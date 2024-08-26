@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 const PORT = 3000
 
-const { Student, Alumni, Post, Event, Community, Job } = require('./models/db.js');
+const { Student, Alumni, FeedPost, Event, Community, Job } = require('./models/db.js');
 
 mongoose.connect(process.env.dbURL)
     .then(() => {
@@ -23,14 +23,14 @@ app.use(cookieParser());
 app.use(cors({ origin: process.env.frontendURL, credentials: true }));
 
 const authRoute = require('./routes/authRoute.js');
-const postRoute = require('./routes/postRoute.js');
+const feedRoute = require('./routes/feedRoute.js');
 const jobRoute = require('./routes/jobRoute.js');
 const dontationRoute = require('./routes/donationRoute.js');
 const eventsRoute = require('./routes/eventsRoute.js');
 const communityRoute = require('./routes/communityRoute.js');
 
 app.use('/auth', authRoute);
-app.use('/posts', postRoute);
+app.use('/feed', feedRoute);
 app.use('/jobs', jobRoute);
 app.use('/donations', dontationRoute);
 app.use('/events', eventsRoute);
