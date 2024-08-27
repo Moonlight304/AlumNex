@@ -13,7 +13,7 @@ const authMiddle = require('../middleware/authMiddle.js');
 const { Student, Alumni, Community, CommunityPost } = require('../models/db.js');
 
 // get all posts of a community
-router.get('/:communityID/', authMiddle, async (req, res) => {
+router.get('/:communityID', authMiddle, async (req, res) => {
     try {
         const filters = req.query.filters ? req.query.filters.split(',') : [];
         const { communityID } = req.params;

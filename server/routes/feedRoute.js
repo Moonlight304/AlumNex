@@ -158,7 +158,7 @@ router.post('/editPost/:feedPostID', authMiddle, async (req, res) => {
 
         return res.json({
             status: 'success',
-            message: 'Edited FeedPost',
+            message: 'Edited Post',
         });
     }
     catch (e) {
@@ -315,7 +315,7 @@ router.get('/dislike/:feedPostID', authMiddle, async (req, res) => {
     }
 })
 
-router.get('/:feedPostID/checkLiked', authMiddle, async (req, res) => {
+router.get('checkLiked/:feedPostID', authMiddle, async (req, res) => {
     try {
         const { userID } = req.user;
         const { feedPostID } = req.params;

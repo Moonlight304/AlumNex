@@ -9,9 +9,8 @@ router.use(cookieParser());
 router.use(cors({ origin: process.env.frontendURL, credentials: true }));
 
 const authMiddle = require('../middleware/authMiddle.js');
-const { Student, Alumni, Community, CommunityPost } = require('../models/db.js');
+const { Student, Alumni, Community } = require('../models/db.js');
 
-const communityPostsRoute = require('./communityPostsRoute.js');
 
 router.get('/', authMiddle, async (req, res) => {
     try {
@@ -285,7 +284,5 @@ router.get('/leaveCommunity/:communityID', authMiddle, async (req, res) => {
     }
 })
 
-// router for community posts
-router.use('/posts', communityPostsRoute);
 
 module.exports = router

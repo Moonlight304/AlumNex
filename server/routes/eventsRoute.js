@@ -267,7 +267,6 @@ router.get('/joinEvent/:eventID', authMiddle, async (req, res) => {
     }
 })
 
-// leave a community
 router.get('/leaveEvent/:eventID', authMiddle, async (req, res) => {
     try {
         const { userID, username, userType } = req.user;

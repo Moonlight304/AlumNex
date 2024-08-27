@@ -13,7 +13,7 @@ const { Student, Alumni, Venture } = require('../models/db.js');
 
 router.get('/', authMiddle, async (req, res) => {
     try {
-        const allData = await Venture.find().sort({ likeCount });
+        const allData = await Venture.find().sort({ likeCount : -1 });
 
         return res.json({
             status: 'success',
@@ -53,7 +53,7 @@ router.get('/:ventureID', authMiddle, async (req, res) => {
     }
 })
 
-router.venture('/newVenture', authMiddle, async (req, res) => {
+router.post('/newVenture', authMiddle, async (req, res) => {
     try {
         const { userID, username, userType } = req.user;
         const { title, description } = req.body;
@@ -91,7 +91,7 @@ router.venture('/newVenture', authMiddle, async (req, res) => {
     }
 })
 
-router.venture('/editVenture/:ventureID', authMiddle, async (req, res) => {
+router.post('/editVenture/:ventureID', authMiddle, async (req, res) => {
     try {
         const { userID, username, userType } = req.user;
         const { ventureID } = req.params;

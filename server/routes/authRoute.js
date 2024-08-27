@@ -147,20 +147,5 @@ router.post('/login', async (req, res) => {
     }
 });
 
-//log out
-router.get('/logout', authMiddle, (req, res) => {
-    try {
-        return res.status(200).json({
-            status: 'success',
-            message: 'Logged out',
-        });
-    }
-    catch (e) {
-        return res.status(500).json({
-            status: 'fail',
-            message: e.message
-        });
-    }
-})
 
 module.exports = router

@@ -28,6 +28,7 @@ const jobRoute = require('./routes/jobRoute.js');
 const dontationRoute = require('./routes/donationRoute.js');
 const eventsRoute = require('./routes/eventsRoute.js');
 const communityRoute = require('./routes/communityRoute.js');
+const communityPostsRoute = require('./communityPostsRoute.js');
 const ventureRoute = require('./routes/ventureRoute.js');
 const userRoute = require('./routes/userRoute.js');
 
@@ -37,7 +38,8 @@ app.use('/jobs', jobRoute);
 app.use('/donations', dontationRoute);
 app.use('/events', eventsRoute);
 app.use('/community', communityRoute);
-app.use('/incubator', ventureRoute);
+app.use('/community/posts', communityPostsRoute);
+app.use('/ventures', ventureRoute);
 app.use('/user', userRoute);
 
 app.listen(PORT, () => {
