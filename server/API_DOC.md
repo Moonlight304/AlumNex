@@ -85,6 +85,7 @@
 ### 1. Fetch All Posts in feed
 
 **URL:** `/feed`  
+
 **Method:** `GET`  
 
 **Description:** Fetches all posts in the feed, optionally filtering based on tags. The posts are returned in reverse chronological order.
