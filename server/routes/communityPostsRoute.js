@@ -117,7 +117,7 @@ router.post('/:communityID/newPost', authMiddle, async (req, res) => {
                 message: 'Join community to post in it'
             })
 
-        user.communityPosts.unshift(savedPost._id);
+        user.communityPosts.push(savedPost._id);
         await user.save();
 
         return res.status(200).json({

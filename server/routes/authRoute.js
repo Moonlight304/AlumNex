@@ -95,7 +95,7 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        const UserModel = userType === 'Student' ? Student : userType === 'Alumni' ? Alumni : null;
+        const UserModel = userType === 'Student' ? Student : 'Alumni';
 
         if (!UserModel) {
             return res.status(400).json({

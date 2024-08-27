@@ -22,7 +22,7 @@ router.get('/', authMiddle, async (req, res) => {
 
         const allJobs = await Job.find(filterQuery).sort({ createdAt: -1 });
 
-        return res.json({
+        return res.status(200).json({
             status: 'success',
             count: allJobs.length,
             data: allJobs,

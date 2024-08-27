@@ -171,7 +171,7 @@ router.post('/editPost/:feedPostID', authMiddle, async (req, res) => {
 
 router.delete('/deletePost/:feedPostID', authMiddle, async (req, res) => {
     try {
-        const { userID, userType} = req.user;
+        const { userID, userType } = req.user;
         const { feedPostID } = req.params;
 
         if (!feedPostID)

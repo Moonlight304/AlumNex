@@ -36,4 +36,300 @@ router.get('/', authMiddle, async (req, res) => {
     }
 })
 
+router.get('/:eventID', authMiddle, async (req, res) => {
+    try {
+        const { eventID } = req.params;
+        
+        if (!eventID)
+            return res.status(400).json({
+                status: 'fail',
+                message: 'eventID not found'
+            })
+
+        const event = await Event.findById(eventID);
+        if (!event)
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Event not found'
+            })
+
+        return res.status(200).json({
+            status: 'success',
+            data: event
+        });
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 'fail',
+            message: e.message
+        });
+    }
+})
+
+router.post('/newEvent', authMiddle, async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const { name, start, end, venue, description, schedule, tag, speakers, sponsors } = req.body;
+
+        if (!name || !start || !end || !venue || !description || !schedule || !tag)
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Incomplete attributes'
+            })
+
+        
+        const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
+        if (!user)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'User not found'
+            })
+
+        const event = new Event({ userID, name, start, end, venue, description, schedule, tag, speakers, sponsors });
+        const savedEvent = await event.save();
+
+        user.events.push(savedEvent._id);
+        await user.save();
+
+        return res.status(201).json({
+            status: 'success',
+            message: 'Created a new event',
+            data: savedEvent._id
+        })
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 'fail',
+            message: e.message
+        });
+    }
+})
+
+router.post('/editEvent/:eventID', authMiddle, async (req, res) => {
+    try {
+        const { eventID } = req.params;
+        const { newName, newStart, newEnd, newVenue, newDescription, newSchedule, newTag, newSpeakers, newSponsors } = req.body;
+
+        if (!newName || !newStart || !newEnd || !newVenue || !newDescription || !newSchedule || !newTag)
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Incomplete attributes'
+            })
+
+        if (!eventID)
+            return res.status(400).json({
+                status: 'fail',
+                message: 'eventID not specified'
+            })
+
+        const existingEvent = await Event.findById(eventID);
+
+        if (!existingEvent)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Event not found'
+            })
+
+        existingEvent.name = newName;
+        existingEvent.start = newStart;
+        existingEvent.end = newEnd;
+        existingEvent.venue = newVenue;
+        existingEvent.description = newDescription;
+        existingEvent.schedule = newSchedule;
+        existingEvent.tag = newTag;
+        existingEvent.speakers = newSpeakers;
+        existingEvent.sponsors = newSponsors;
+
+        await existingEvent.save();
+
+        return res.status(201).json({
+            status: 'success',
+            message: 'Edited event'
+        })
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 'fail',
+            message: e.message
+        });
+    }
+})
+
+router.delete('/deleteEvent/:eventID', authMiddle, async (req, res) => {
+    try {
+        const { userID, userType } = req.user;
+        const { eventID } = req.params;
+
+        if (!eventID)
+            return res.status(400).json({
+                status: 'fail',
+                message: 'eventID is required',
+            })
+
+        const event = await Event.findById(feedPostID);
+
+        if (!event)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'event not found',
+            })
+
+        const UserModel = userType === 'Student' ? Student : Alumni;    
+        const user = await UserModel.findById(userID);
+        if (!user)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'User not found'
+            })
+
+        if (userID !== event.userID._id.toString())
+            return res.status(401).json({
+                status: 'fail',
+                message: 'cannot delete event. Not authorised',
+            })
+
+        await Event.deleteOne({ _id: eventID });
+
+        await UserModel.updateOne(
+            { _id: userID },
+            { $pull: { events: eventID } }
+        );
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'deleted event successfully',
+        })
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 'fail',
+            message: e.message
+        });
+    }
+})
+
+router.get('/joinEvent/:eventID', authMiddle, async (req, res) => {
+    try {
+        const { userID, username, userType } = req.user;
+        const { eventID } = req.params;
+
+        if (!userID || !username || !userType) {
+            return res.status(401).json({
+                status: 'fail',
+                message: 'Authentication failed. Please log in again.',
+            });
+        }
+
+        const UserModel = userType === 'Student' ? Student : Alumni;
+        const user = await UserModel.findById(userID);
+        if (!user)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'User not found'
+            })
+
+        const event = await Event.findById(eventID);
+        if (!event)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'event not found'
+            })
+
+        if (event.enrolled.includes(userID))
+            return res.status(409).json({
+                status: 'fail',
+                message: 'Already enrolled in event',
+            })
+        
+        await Event.updateOne(
+            { _id: eventID },
+            {
+                $push: { enrolled: userID },
+                $inc: { enrolledCount: 1 },
+            }
+        );
+
+        await UserModel.updateOne(
+            { _id: userID },
+            { $push: { events: eventID } }
+        );
+
+        return res.status(201).json({
+            status: 'success',
+            message: 'Enrolled in event'
+        });
+    } 
+    catch (e) {
+        return res.status(500).json({
+            status: 'fail',
+            message: e.message,
+        });
+    }
+})
+
+// leave a community
+router.get('/leaveEvent/:eventID', authMiddle, async (req, res) => {
+    try {
+        const { userID, username, userType } = req.user;
+        const { eventID } = req.params;
+
+        if (!userID || !username || !userType)
+            return res.status(401).json({
+                status: 'fail',
+                message: 'Authentication failed. Please log in again.',
+            });
+
+        const UserModel = userType === 'Student' ? Student : Alumni;
+        const user = await UserModel.findById(userID);
+        if (!user)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'User not found'
+            })
+
+        if (!eventID)
+            return res.status(400).json({
+                status: 'fail',
+                message: 'eventID not specified'
+            })
+
+        const event = await Event.findById(eventID);
+        if (!event)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'event not found'
+            })
+
+        if (!event.enrolled.includes(userID))
+            return res.status(409).json({
+                status: 'fail',
+                message: 'didnt enroll in event',
+            })
+
+        await Event.updateOne(
+            { _id: eventID },
+            {
+                $pull: { enrolled: userID },
+                $inc: { enrolledCount: -1 },
+            }
+        );
+
+        await UserModel.updateOne(
+            { _id: userID },
+            { $pull: { enrolled: eventID } }
+        );
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'disenrolled from event'
+        });
+    } 
+    catch (e) {
+        return res.status(500).json({
+            status: 'fail',
+            message: e.message,
+        });
+    }
+})
+
 module.exports = router

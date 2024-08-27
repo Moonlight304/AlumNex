@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 const PORT = 3000
 
-const { Student, Alumni, FeedPost, Event, Community, Job } = require('./models/db.js');
+const { Student, Alumni, FeedPost, Event, Community, Job, Venture } = require('./models/db.js');
 
 mongoose.connect(process.env.dbURL)
     .then(() => {
@@ -28,6 +28,8 @@ const jobRoute = require('./routes/jobRoute.js');
 const dontationRoute = require('./routes/donationRoute.js');
 const eventsRoute = require('./routes/eventsRoute.js');
 const communityRoute = require('./routes/communityRoute.js');
+const ventureRoute = require('./routes/ventureRoute.js');
+const userRoute = require('./routes/userRoute.js');
 
 app.use('/auth', authRoute);
 app.use('/feed', feedRoute);
@@ -35,6 +37,8 @@ app.use('/jobs', jobRoute);
 app.use('/donations', dontationRoute);
 app.use('/events', eventsRoute);
 app.use('/community', communityRoute);
+app.use('/incubator', ventureRoute);
+app.use('/user', userRoute);
 
 app.listen(PORT, () => {
     console.log(`Running on Port ${PORT}...`);

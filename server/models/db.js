@@ -45,6 +45,11 @@ const speakerSchema = new mongoose.Schema({
 
 // Event Schema
 const eventSchema = new mongoose.Schema({
+    userID: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        refPath: 'userType',
+    },
     name: {
         type: String,
         required: true,
@@ -72,10 +77,22 @@ const eventSchema = new mongoose.Schema({
     tag: {
         type: String,
         required: true,
-        enum: ['social', 'career'],
+        enum: ['social', 'career', 'get-together'],
     },
     speakers: [speakerSchema],
     sponsors: [String],
+    enrolledCount: {
+        type: Number,
+        default: 0,
+        required: true,
+    },
+    enrolled: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            refPath: 'userType',
+        }
+    ]
 }, { timestamps: true });
 
 // Feed FeedPost Schema
@@ -166,7 +183,6 @@ const communitySchema = new mongoose.Schema({
         required: true,
         refPath: 'userType',
     },
-    ...userTypeSchema,
     createdBy: {
         type: String,
         required: true,
@@ -293,7 +309,19 @@ const studentSchema = new mongoose.Schema({
             ref: 'CommunityPost',
         }
     ],
-    comments: [commentSchema]
+    comments: [commentSchema],
+    events : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Event',
+        }
+    ],
+    ventures: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Venture',
+        }        
+    ]
 });
 
 // Alumni Schema
@@ -385,8 +413,72 @@ const alumniSchema = new mongoose.Schema({
             ref: 'CommunityPost',
         }
     ],
-    comments: [commentSchema]
+    comments: [commentSchema],
+    events : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Event',
+        }
+    ],
+    investments : [
+        {
+            venture : {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Venture',
+            },
+            amountInvested : {
+                type : Number,
+                default: 0,
+                required: true, 
+            }
+        }
+    ]
 });
+
+// Venture Schema
+const ventureSchema = new mongoose.Schema({
+    userID: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Student',
+    },
+    username: {
+        type: String,
+        required: true,
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    description: {
+        type: String,
+        required: true,
+    },
+    likeCount: {
+        type: Number,
+        default: 0,
+    },
+    amountRaised: {
+        type: Number,
+        default: 0,
+    },
+    likes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            refPath: 'userType',
+        }
+    ],
+    investorCount: {
+        type: Number,
+        default: 0,
+    },
+    investors: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            refPath: 'Alumni',
+        }
+    ]
+})
 
 // Models
 const Student = mongoose.model('Student', studentSchema);
@@ -396,5 +488,6 @@ const Event = mongoose.model('Event', eventSchema);
 const Community = mongoose.model('Community', communitySchema);
 const CommunityPost = mongoose.model('CommunityPost', communityPostSchema);
 const Job = mongoose.model('Job', jobSchema);
+const Venture = mongoose.model('Venture', ventureSchema);
 
-module.exports = { Student, Alumni, FeedPost, Event, Community, CommunityPost, Job };
+module.exports = { Student, Alumni, FeedPost, Event, Community, CommunityPost, Job, Venture };
