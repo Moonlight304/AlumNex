@@ -188,8 +188,8 @@
 
 **Request Body:**
 
-* `newContent` : (String, Required) The updated content.
-* `newTag` : (String, Required) The updated tag.
+* `content` : (String, Required) The updated content.
+* `tag` : (String, Required) The updated tag.
 
 **Response Structure:**
 
@@ -377,7 +377,7 @@
 
 **Request Body:**
 
-* `newComment` : (String, Required) The content of the comment.
+* `comment` : (String, Required) The content of the comment.
 
 **Response Structure:**
 
@@ -449,7 +449,7 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         count: <number_of_jobs>,
         data: [<job_objects>]
     }
@@ -457,7 +457,7 @@
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -477,7 +477,7 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         count: <number_of_mentors>,
         data: [<alumni_objects>]
     }
@@ -485,7 +485,7 @@
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -508,14 +508,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         job: <job_object>
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -543,14 +543,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: Posted job successfully
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -570,25 +570,25 @@
 
 **Request Body:**
 
-* `newTitle` : (String, Required) New title for the job.
-* `newCompany` : (String, Required) New company for the job.
-* `newLocation` : (String, Required) New location for the job.
-* `newDescription` : (String, Required) New description for the job.
-* `newTag` : (String, Required) New tag for the job.
+* `title` : (String, Required) New title for the job.
+* `company` : (String, Required) New company for the job.
+* `location` : (String, Required) New location for the job.
+* `description` : (String, Required) New description for the job.
+* `tag` : (String, Required) New tag for the job.
 
 **Response Structure:**
 
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: Edited job successfully
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -611,14 +611,73 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: Deleted job successfully
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
+        message: <error_message>
+    }
+    ```
+
+
+### 7. Apply to a job
+
+**URL:** `/jobs/apply/:jobID`  
+
+**Method:** `GET`  
+
+**Description:** Students apply for a job
+
+**Request Parameters:**
+
+* `jobID` : (String, Required) The ID of the job to apply.
+
+**Response Structure:**
+
+- **Success:**
+    ```
+    {
+        status: 'success',
+        message: 'Applied to job'
+    }
+    ```
+- **Fail:**
+    ```
+    {
+        status: 'fail',
+        message: <error_message>
+    }
+    ```
+
+### 8. Drop a job application
+
+**URL:** `/jobs/dropApplication/:jobID`  
+
+**Method:** `GET`  
+
+**Description:** Students drop a job application
+
+**Request Parameters:**
+
+* `jobID` : (String, Required) The ID of the job to apply.
+
+**Response Structure:**
+
+- **Success:**
+    ```
+    {
+        status: 'success',
+        message: 'Dropped job application'
+    }
+    ```
+- **Fail:**
+    ```
+    {
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -640,14 +699,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         topDonors: [<alumni_objects>]
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -670,14 +729,14 @@
 
     ```
     {
-        status: success,
+        status: 'success',
         message: Donated successfully!
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -704,7 +763,7 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         count: <number_of_events>,
         data: [<event_objects>]
     }
@@ -712,7 +771,7 @@
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -735,14 +794,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         data: <event_object>
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -774,7 +833,7 @@
 
     ```
     {
-        status: success,
+        status: 'success',
         message: Created a new event,
         data: <event_id>
     }
@@ -782,7 +841,7 @@
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -802,29 +861,29 @@
 
 **Request Body:**
 
-* `newName` : (String, Required) New name of the event.
-* `newStart` : (Date, Required) New start date and time.
-* `newEnd` : (Date, Required) New end date and time.
-* `newVenue` : (String, Required) New venue.
-* `newDescription` : (String, Required) New description.
-* `newSchedule` : (String, Required) New schedule.
-* `newTag` : (String, Required) New tag.
-* `newSpeakers` : (Array, Optional) New list of speakers.
-* `newSponsors` : (Array, Optional) New list of sponsors.
+* `name` : (String, Required) New name of the event.
+* `start` : (Date, Required) New start date and time.
+* `end` : (Date, Required) New end date and time.
+* `venue` : (String, Required) New venue.
+* `description` : (String, Required) New description.
+* `schedule` : (String, Required) New schedule.
+* `tag` : (String, Required) New tag.
+* `speakers` : (Array, Optional) New list of speakers.
+* `sponsors` : (Array, Optional) New list of sponsors.
 
 **Response Structure:**
 
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: Edited event
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -847,14 +906,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: deleted event successfully
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -877,14 +936,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: Enrolled in event
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -907,14 +966,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: Disenrolled from event
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -937,7 +996,7 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         count: <number_of_communities>,
         data: [<community_objects>]
     }
@@ -945,7 +1004,7 @@
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -968,14 +1027,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         data: <community_object>
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -999,14 +1058,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         data: <community_id>
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1026,22 +1085,22 @@
 
 **Request Body:**
 
-* `newName` : (String, Required) New name of the community.
-* `newDescription` : (String, Required) New description of the community.
+* `name` : (String, Required) New name of the community.
+* `description` : (String, Required) New description of the community.
 
 **Response Structure:**
 
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         data: <community_id>
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1064,14 +1123,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: Joined community
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1094,14 +1153,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: Left community
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1128,7 +1187,7 @@
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         count: <number_of_posts>,
         data: [<post_objects>]
     }
@@ -1136,7 +1195,7 @@
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1159,14 +1218,14 @@
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         post: <post_object>
     }
     ```
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1190,14 +1249,14 @@
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         message: Posted successfully
     }
     ```
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1214,22 +1273,22 @@
 
 * `communityID` : (String, Required) The ID of the community the post belongs to.
 * `communityPostID` : (String, Required) The ID of the post to edit.
-* `newContent` : (String, Required) The new content for the post.
-* `newTag` : (String, Required) `['question', 'resources', 'roadmaps']`
+* `content` : (String, Required) The new content for the post.
+* `tag` : (String, Required) `['question', 'resources', 'roadmaps']`
 
 **Response Structure:**
 
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         message: Edited CommunityPost
     }
     ```
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1253,14 +1312,14 @@
 
     ``` 
     {
-        status: success,
+        status: 'success',
         message: Deleted post successfully
     }
     ```
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1283,7 +1342,7 @@
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         message: Incremented like count,
         newLikeCount: <new_like_count>
     }
@@ -1291,7 +1350,7 @@
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1314,7 +1373,7 @@
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         message: Decremented like count,
         newLikeCount: <new_like_count>
     }
@@ -1322,7 +1381,7 @@
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1345,14 +1404,14 @@
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         liked: <true_or_false>
     }
     ```
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1375,7 +1434,7 @@
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         message: Fetched all comments for post,
         comments: [<comment_objects>]
     }
@@ -1383,7 +1442,7 @@
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1400,21 +1459,21 @@
 
 * `communityID` : (String, Required) The ID of the community the post belongs to.
 * `communityPostID` : (String, Required) The ID of the post to comment on.
-* `newComment` : (String, Required) The content of the new comment.
+* `comment` : (String, Required) The content of the new comment.
 
 **Response Structure:**
 
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         message: Saved comment
     }
     ```
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1438,14 +1497,14 @@
 - **Success:**
     ``` 
     {
-        status: success,
+        status: 'success',
         message: Comment deleted successfully
     }
     ```
 - **Fail:**
     ``` 
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1467,17 +1526,43 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         data: [<venture_objects>]
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
+
+### 2. List ventures of student
+
+**URL:** `/ventures/myVentures`  
+
+**Method:** `GET`  
+
+**Description:** Retrieves all ventures started by authenticated student.
+
+**Response Structure:**
+
+- **Success:**
+    ```
+    {
+        status: 'success',
+        data: <myVentures>
+    }
+    ```
+- **Fail:**
+    ```
+    {
+        status: 'fail',
+        message: <error_message>
+    }
+    ```
+
 
 ### 2. View Venture
 
@@ -1496,14 +1581,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         data: <venture_object>
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1526,14 +1611,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         data: <venture_object>
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1552,22 +1637,22 @@
 
 **Request Body:**
 
-* `newTitle` : (String, Required) New title of the venture.
-* `newDescription` : (String, Required) New description of the venture.
+* `title` : (String, Required) New title of the venture.
+* `description` : (String, Required) New description of the venture.
 
 **Response Structure:**
 
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: 'edited venture'
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1589,14 +1674,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: 'deleted venture'
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1618,7 +1703,7 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: 'Incremented like count',
         newLikeCount: <new_like_count>
     }
@@ -1626,7 +1711,7 @@
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1648,7 +1733,7 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: 'Decremented like count',
         newLikeCount: <new_like_count>
     }
@@ -1656,7 +1741,7 @@
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1678,14 +1763,14 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         liked: <true_or_false>
     }
     ```
 - **Fail:**
     ```
     {
-        status: fail,
+        status: 'fail',
         message: <error_message>
     }
     ```
@@ -1711,10 +1796,45 @@
 - **Success:**
     ```
     {
-        status: success,
+        status: 'success',
         message: 'Invested in venture'
     }
     ```
+- **Fail:**
+    ```
+    {
+        status: 'fail',
+        message: <error_message>
+    }
+    ```
+
+----
+
+## User Routes
+
+### 1. Get User Details
+
+**URL:** `/:userType/:userID`  
+
+**Method:** `GET`  
+
+**Description:** Fetches the details of a user based on the `userType` and `userID`. The user type can either be `Student` or `Alumni`.
+
+**Request Parameters:**
+
+* `userType` : (String, Required) [Student, Alumni]
+* `userID` : (String, Required) The ID of the user.
+
+**Response Structure:**
+
+- **Success:**
+    ```
+    {
+        status: success,
+        user: <userObject>
+    }
+    ```
+
 - **Fail:**
     ```
     {
@@ -1722,3 +1842,164 @@
         message: <error_message>
     }
     ```
+
+
+### 2. Follow User
+
+**URL:** `/follow/:destUserType/:destUserID`  
+
+**Method:** `GET`  
+
+**Description:** Allows a user to follow another user. The source user is determined by the authenticated user, and the destination user is specified by `destUserType` and `destUserID`.
+
+**Request Parameters:**
+
+* `destUserType` : (String, Required) [Student, Alumni]
+* `destUserID` : (String, Required) The ID of the user to follow.
+
+**Response Structure:**
+
+- **Success:**
+    ```
+    {
+        status: success,
+        message: Followed user
+    }
+    ```
+
+- **Fail:**
+    ```
+    {
+        status: fail,
+        message: <error_message>
+    }
+    ```
+
+
+### 3. Unfollow User
+
+**URL:** `/unfollow/:destUserType/:destUserID`  
+
+**Method:** `GET`  
+
+**Description:** Allows a user to unfollow another user. The source user is determined by the authenticated user, and the destination user is specified by `destUserType` and `destUserID`.
+
+**Request Parameters:**
+
+* `destUserType` : (String, Required) [Student, Alumni]
+* `destUserID` : (String, Required) The ID of the user to unfollow.
+
+**Response Structure:**
+
+- **Success:**
+    ```
+    {
+        status: success,
+        message: Unfollowed user
+    }
+    ```
+
+- **Fail:**
+    ```
+    {
+        status: fail,
+        message: <error_message>
+    }
+    ```
+
+
+### 4. Check If Following User
+
+**URL:** `/getIsFollowing/:destUserType/:destUserID`  
+
+**Method:** `GET`  
+
+**Description:** Checks if the authenticated user is following the specified destination user.
+
+**Request Parameters:**
+
+* `destUserType` : (String, Required) [Student, Alumni]
+* `destUserID` : (String, Required) The ID of the user to check.
+
+**Response Structure:**
+
+- **Success:**
+    ```
+    {
+        status: success,
+        message: 'true' or 'false'
+    }
+    ```
+
+- **Fail:**
+    ```
+    {
+        status: fail,
+        message: <error_message>
+    }
+    ```
+
+
+### 5. Edit Profile
+
+**URL:** `/editProfile`  
+
+**Method:** `POST`  
+
+**Description:** Allows the authenticated user to update their profile information.
+
+**Request Parameters:**
+
+* `email` : (String, Optional) The new email address.
+* `branch` : (String, Optional, Required for Students) The new branch of study.
+* `gradYear` : (String, Optional, Required for Alumni) The year of graduation.
+* `openToMentor` : (Boolean, Optional) Indicates if the user is open to being a mentor.
+* `mentorPitch` : (String, Optional) The pitch for being a mentor.
+
+**Response Structure:**
+
+- **Success:**
+    ```
+    {
+        status: success,
+        message: Profile updated successfully.,
+        data: <updatedUser object>
+    }
+    ```
+
+- **Fail:**
+    ```
+    {
+        status: fail,
+        message: <error_message>
+    }
+    ```
+
+
+### 6. Delete Profile
+
+**URL:** `/deleteProfile`  
+
+**Method:** `DELETE`  
+
+**Description:** Allows the authenticated user to delete their profile.
+
+
+**Response Structure:**
+
+- **Success:**
+    ```
+    {
+        status: success,
+        message: Deleted account
+    }
+    ```
+
+- **Fail:**
+    ```
+    {
+        status: fail,
+        message: <error_message>
+    }
+    ```
+

@@ -134,7 +134,7 @@ router.post('/editJob/:jobID', authMiddle, async (req, res) => {
     try {
         const { userID, userType} = req.user;
         const { jobID } = req.params;
-        const { newTitle, newCompany, newLocation, newDescription, newTag } = req.body;
+        const { title, company, location, description, tag } = req.body;
             
         if (!jobID)
             return res.json({
@@ -142,7 +142,7 @@ router.post('/editJob/:jobID', authMiddle, async (req, res) => {
                 message: 'jobID is required',
             })
 
-        if (!newTitle || !newCompany || !newLocation || !newDescription || !newTag) {
+        if (!title || !company || !location || !description || !tag) {
             return res.json({
                 status: 'fail',
                 message: 'Incomplete atrributes',
@@ -170,11 +170,11 @@ router.post('/editJob/:jobID', authMiddle, async (req, res) => {
             });
 
             
-        job.title = newTitle;
-        job.company = newCompany;
-        job.location = newLocation;
-        job.description = newDescription;
-        job.tag = newTag;
+        job.title = title;
+        job.company = company;
+        job.location = location;
+        job.description = description;
+        job.tag = tag;
 
         await job.save();
 
@@ -232,6 +232,138 @@ router.delete('/deleteJob/:jobID', authMiddle, async (req, res) => {
         return res.json({
             status: 'success',
             message: 'deleted job successfully',
+        })
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 'fail',
+            message: e.message
+        });
+    }
+})
+
+router.get('/apply/:jobID', authMiddle, async (req, res) => {
+    try {
+        const { userID, userType } = req.user;
+        const { jobID } = req.params;
+
+        if (!jobID)
+            return res.status(400).json({
+                status: 'fail',
+                message: 'jobID is required',
+            })
+
+        if (userType !== 'Student')
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Only students can apply for jobs'
+            })
+
+        const job = await Job.findById(jobID);
+        if (!job)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'job not found',
+            })
+        
+        const student = await Student.findById(userID);
+        if (!student)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'student not found'
+            })
+
+        if (job.appliedStudents.includes(userID))
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Already applied',
+            })
+
+        await Job.findByIdAndUpdate(
+            jobID,
+            {
+                $push: { appliedStudents : userID },
+                $inc: { appliedCount : 1 },
+            }
+        );
+
+        await Student.findByIdAndUpdate(
+            userID,
+            {
+                $push: { appliedJobs : jobID },
+                $inc: { appliedJobsCount : 1 },
+            }
+        );
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Applied to job'
+        })
+    }
+    catch (e) {
+        return res.status(500).json({
+            status: 'fail',
+            message: e.message
+        });
+    }
+})
+
+router.get('/dropApplication/:jobID', authMiddle, async (req, res) => {
+    try {
+        const { userID, userType } = req.user;
+        const { jobID } = req.params;
+
+        if (!jobID)
+            return res.status(400).json({
+                status: 'fail',
+                message: 'jobID is required',
+            })
+
+        if (userType !== 'Student')
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Only students can drop jobs'
+            })
+
+        const job = await Job.findById(jobID);
+        if (!job)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'job not found',
+            })
+        
+        const student = await Student.findById(userID);
+        if (!student)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'student not found'
+            })
+
+        if (!job.appliedStudents.includes(userID))
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Already dropped job application',
+            })
+
+        await Job.findByIdAndUpdate(
+            jobID,
+            {
+                $pull: { appliedStudents : userID },
+                $inc: { appliedCount : -1 },
+            }
+        );
+
+        await Student.findByIdAndUpdate(
+            userID,
+            {
+                $pull: { appliedJobs : jobID },
+                $inc: { appliedJobsCount : -1 },
+            }
+        );
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Dropped job application'
         })
     }
     catch (e) {

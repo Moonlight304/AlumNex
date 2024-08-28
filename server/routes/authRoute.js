@@ -19,7 +19,7 @@ router.post('/signup', async (req, res) => {
     try {
         const { userType, username, password, confirmPassword, email, branch, gradYear, openToMentor, mentorPitch } = req.body;
 
-        if (!userType || !username || !password || !confirmPassword || !email || (userType === 'Student' && !branch) || (userType === 'Alumni' && !gradYear)) {
+        if (!userType || !username || !password || !confirmPassword || !email || (userType === 'Student' && !branch) || (userType === 'Alumni' && (!gradYear || !openToMentor || !mentorPitch))) {
             return res.status(400).json({
                 status: 'fail',
                 message: 'Please specify all required fields.',

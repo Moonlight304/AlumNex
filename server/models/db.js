@@ -241,10 +241,26 @@ const jobSchema = new mongoose.Schema({
         required: true,
     },
     requirements: [String],
+    appliedStudents: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: 'Student',
+        }
+    ],
+    appliedCount : {
+        type: Number,
+        default: 0,
+        required: true,
+    }
 }, { timestamps: true });
 
 // Student Schema
 const studentSchema = new mongoose.Schema({
+    typeOfUser: {
+        type: String,
+        default: 'Student',
+        immutable: true,
+    },
     username: {
         type: String,
         required: true,
@@ -316,6 +332,17 @@ const studentSchema = new mongoose.Schema({
             ref: 'Event',
         }
     ],
+    appliedJobsCount : {
+        type: Number,
+        default: 0,
+        required: true,
+    },
+    appliedJobs : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Job',
+        }
+    ],
     ventures: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -326,6 +353,11 @@ const studentSchema = new mongoose.Schema({
 
 // Alumni Schema
 const alumniSchema = new mongoose.Schema({
+    typeOfUser: {
+        type: String,
+        default: 'Alumni',
+        immutable: true,
+    },
     username: {
         type: String,
         required: true,
@@ -359,6 +391,7 @@ const alumniSchema = new mongoose.Schema({
     mentorPitch : {
         type: String,
         default: '',
+        required: true,
     },
     donation: {
         type: Number,

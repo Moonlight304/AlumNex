@@ -28,6 +28,38 @@ router.get('/', authMiddle, async (req, res) => {
     }
 })
 
+router.get('/myVentures', authMiddle, async (req, res) => {
+    try {
+        const { userID, userType } = req.user;
+
+        if (userType !== 'Student')
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Only students can access their ventures'
+            })
+
+        const student = await Student.findById(userID);
+        if (!student)
+            return res.status(404).json({
+                status: 'fail',
+                message: 'User not found'
+            })
+
+        const myVentures = student.ventures;
+
+        return res.status(200).json({
+            status: 'success',
+            data: myVentures
+        });
+    } 
+    catch (e) {
+        return res.status(500).json({
+            status: 'fail',
+            message: e.message
+        });
+    }
+})
+
 router.get('/:ventureID', authMiddle, async (req, res) => {
     try {
         const { ventureID } = req.params;
@@ -95,11 +127,11 @@ router.post('/editVenture/:ventureID', authMiddle, async (req, res) => {
     try {
         const { userID, username, userType } = req.user;
         const { ventureID } = req.params;
-        const { newTitle, newDescription } = req.body;
+        const { title, description } = req.body;
 
         const ventureResult = await Venture.updateOne(
             { _id: ventureID },
-            { title: newTitle, description: newDescription }
+            { title: title, description: description }
         )
         if (ventureResult.matchedCount === 0)
             return res.status(404).json({

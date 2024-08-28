@@ -28,7 +28,7 @@ const jobRoute = require('./routes/jobRoute.js');
 const dontationRoute = require('./routes/donationRoute.js');
 const eventsRoute = require('./routes/eventsRoute.js');
 const communityRoute = require('./routes/communityRoute.js');
-const communityPostsRoute = require('./communityPostsRoute.js');
+const communityPostsRoute = require('./routes/communityPostsRoute.js');
 const ventureRoute = require('./routes/ventureRoute.js');
 const userRoute = require('./routes/userRoute.js');
 

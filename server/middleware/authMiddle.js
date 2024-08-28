@@ -28,7 +28,7 @@ function authMiddle(req, res, next) {
     catch (e) {
         return res.status(500).json({
             status: 'fail',
-            message: 'Error : ' + e,
+            message: e.message,
         })
     }
 }

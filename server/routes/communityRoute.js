@@ -140,7 +140,7 @@ router.post('/editCommunity/:communityID', authMiddle, async (req, res) => {
     try {
         const { userID, username, userType } = req.user;
         const { communityID } = req.params;
-        const { newName, newDescription } = req.body;
+        const { name, description } = req.body;
 
         if (!userID || !username || !userType) {
             return res.status(401).json({
@@ -149,7 +149,7 @@ router.post('/editCommunity/:communityID', authMiddle, async (req, res) => {
             });
         }
 
-        if (!newName || !newDescription) {
+        if (!name || !description) {
             return res.status(400).json({
                 status: 'fail',
                 message: 'Incomplete attributes',
@@ -163,8 +163,8 @@ router.post('/editCommunity/:communityID', authMiddle, async (req, res) => {
                 message: 'community not found'
             })
 
-        community.name = newName;
-        community.description = newDescription;
+        community.name = name;
+        community.description = description;
         await community.save();
 
         return res.status(201).json({

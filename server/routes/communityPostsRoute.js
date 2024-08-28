@@ -137,7 +137,7 @@ router.post('/:communityID/editPost/:communityPostID', authMiddle, async (req, r
     try {
         const { userID, userType} = req.user;
         const { communityPostID } = req.params;
-        const { newContent, newTag } = req.body;
+        const { content, tag } = req.body;
         
         if (!communityPostID)
             return res.status(404).json({
@@ -145,7 +145,7 @@ router.post('/:communityID/editPost/:communityPostID', authMiddle, async (req, r
                 message: 'communityPostID not found',
             })
 
-        if (!newContent || !newTag) {
+        if (!content || !tag) {
             return res.status(400).json({
                 status: 'fail',
                 message: 'Incomplete atrributes',
@@ -167,8 +167,8 @@ router.post('/:communityID/editPost/:communityPostID', authMiddle, async (req, r
             });
 
             
-        post.content = newContent;
-        post.tag = newTag;
+        post.content = content;
+        post.tag = tag;
 
         await post.save();
 
@@ -416,7 +416,7 @@ router.post('/:communityID/:communityPostID/comments/newComment', authMiddle, as
     try {
         const { userID, username, userType } = req.user;
         const { communityPostID } = req.params;
-        const { newComment } = req.body;
+        const { comment } = req.body;
 
         if (!communityPostID)
             return res.status(400).json({
@@ -424,7 +424,7 @@ router.post('/:communityID/:communityPostID/comments/newComment', authMiddle, as
                 message: 'communityPostID not found',
             })
 
-        if (!newComment)
+        if (!comment)
             return res.status(400).json({
                 status: 'fail',
                 message: 'no comment text entered',
@@ -438,15 +438,15 @@ router.post('/:communityID/:communityPostID/comments/newComment', authMiddle, as
                 message: 'post not found',
             })
 
-        const comment = {
+        const newCommentObj = {
             _id: new mongoose.mongo.ObjectId(),
             userID: userID,
             userType: userType,
             username: username,
-            content: newComment,
+            content: comment,
         };
 
-        post.comments.unshift(comment);
+        post.comments.unshift(newCommentObj);
         await post.save();
 
         return res.status(200).json({

@@ -108,9 +108,9 @@ router.post('/newEvent', authMiddle, async (req, res) => {
 router.post('/editEvent/:eventID', authMiddle, async (req, res) => {
     try {
         const { eventID } = req.params;
-        const { newName, newStart, newEnd, newVenue, newDescription, newSchedule, newTag, newSpeakers, newSponsors } = req.body;
+        const { name, start, end, venue, description, schedule, tag, speakers, sponsors } = req.body;
 
-        if (!newName || !newStart || !newEnd || !newVenue || !newDescription || !newSchedule || !newTag)
+        if (!name || !start || !end || !venue || !description || !schedule || !tag)
             return res.status(400).json({
                 status: 'fail',
                 message: 'Incomplete attributes'
@@ -130,15 +130,15 @@ router.post('/editEvent/:eventID', authMiddle, async (req, res) => {
                 message: 'Event not found'
             })
 
-        existingEvent.name = newName;
-        existingEvent.start = newStart;
-        existingEvent.end = newEnd;
-        existingEvent.venue = newVenue;
-        existingEvent.description = newDescription;
-        existingEvent.schedule = newSchedule;
-        existingEvent.tag = newTag;
-        existingEvent.speakers = newSpeakers;
-        existingEvent.sponsors = newSponsors;
+        existingEvent.name = name;
+        existingEvent.start = start;
+        existingEvent.end = end;
+        existingEvent.venue = venue;
+        existingEvent.description = description;
+        existingEvent.schedule = schedule;
+        existingEvent.tag = tag;
+        existingEvent.speakers = speakers;
+        existingEvent.sponsors = sponsors;
 
         await existingEvent.save();
 

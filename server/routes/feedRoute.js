@@ -121,7 +121,7 @@ router.post('/editPost/:feedPostID', authMiddle, async (req, res) => {
     try {
         const { userID, userType} = req.user;
         const { feedPostID } = req.params;
-        const { newContent, newTag } = req.body;
+        const { content, tag } = req.body;
         
         if (!feedPostID)
             return res.json({
@@ -129,7 +129,7 @@ router.post('/editPost/:feedPostID', authMiddle, async (req, res) => {
                 message: 'feedPostID is required',
             })
 
-        if (!newContent || !newTag) {
+        if (!content || !tag) {
             return res.json({
                 status: 'fail',
                 message: 'Incomplete atrributes',
@@ -151,8 +151,8 @@ router.post('/editPost/:feedPostID', authMiddle, async (req, res) => {
             });
 
             
-        post.content = newContent;
-        post.tag = newTag;
+        post.content = content;
+        post.tag = tag;
 
         await post.save();
 
@@ -225,7 +225,7 @@ router.get('/like/:feedPostID', authMiddle, async (req, res) => {
         const { feedPostID } = req.params;
 
         if (!feedPostID)
-            return res.json({
+            return res.status(400).json({
                 status: 'fail',
                 message: 'feedPostID is required',
             });
@@ -233,13 +233,13 @@ router.get('/like/:feedPostID', authMiddle, async (req, res) => {
         const post = await FeedPost.findById(feedPostID);
 
         if (!post)
-            return res.json({
+            return res.status(404).json({
                 status: 'fail',
                 message: 'post not found',
             })
 
         if (post.likes.includes(userID))
-            return res.json({
+            return res.status(400).json({
                 status: 'fail',
                 message: 'Already liked',
             })
@@ -253,7 +253,7 @@ router.get('/like/:feedPostID', authMiddle, async (req, res) => {
             }
         );
 
-        return res.json({
+        return res.status(200).json({
             status: 'success',
             message: 'Incremented like count',
             newLikeCount: post.likeCount + 1,
@@ -400,7 +400,7 @@ router.post('/:feedPostID/comments/newComment', authMiddle, async (req, res) => 
     try {
         const { userID, username, userType } = req.user;
         const { feedPostID } = req.params;
-        const { newComment } = req.body;
+        const { comment } = req.body;
 
         if (!feedPostID)
             return res.json({
@@ -408,7 +408,7 @@ router.post('/:feedPostID/comments/newComment', authMiddle, async (req, res) => 
                 message: 'feedPostID is required',
             })
 
-        if (!newComment)
+        if (!comment)
             return res.json({
                 status: 'fail',
                 message: 'no comment text entered',
@@ -422,12 +422,12 @@ router.post('/:feedPostID/comments/newComment', authMiddle, async (req, res) => 
                 message: 'post not found',
             })
 
-        const comment = {
+        const newCommentObj = {
             _id: new mongoose.mongo.ObjectId(),
             userID: userID,
             userType: userType,
             username: username,
-            content: newComment,
+            content: comment,
         };
         
         const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
@@ -437,10 +437,10 @@ router.post('/:feedPostID/comments/newComment', authMiddle, async (req, res) => 
                 message: 'User not found.',
             });
 
-        post.comments.unshift(comment);
+        post.comments.unshift(newCommentObj);
         await post.save();
 
-        user.comments.unshift(comment);
+        user.comments.unshift(newCommentObj);
         await user.save();
 
         return res.status(201).json({
