@@ -170,7 +170,7 @@ router.get('/getIsFollowing/:destUserType/:destUserID', authMiddle, async (req, 
 router.post('/editProfile', authMiddle, async (req, res) => {
     try {
         const { userID, userType } = req.user;
-        const { email, branch, gradYear, openToMentor, mentorPitch } = req.body;
+        const { email, bio, gender, branch, gradYear, openToMentor, mentorPitch } = req.body;
 
         if (!email || (userType === 'Student' && !branch) || (userType === 'Alumni' && (!gradYear || !openToMentor || !mentorPitch))) {
             return res.status(400).json({
@@ -198,7 +198,7 @@ router.post('/editProfile', authMiddle, async (req, res) => {
         const updatedUser = await UserModel.findByIdAndUpdate(
             userID,
             {
-                email,
+                email, bio, gender,
                 ...additionalData,
             },
             { new: true, runValidators: true } // Return the updated document
