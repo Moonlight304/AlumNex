@@ -78,13 +78,13 @@ router.post('/newPost', authMiddle, async (req, res) => {
         const { content, tag } = req.body;
 
         if (!userID || !userType || !username || !content || !tag)
-            return res.json({
+            return res.status(400).json({
                 status: 'fail',
                 message: 'Please specify all fields.',
             });
 
         if (!['Student', 'Alumni'].includes(userType)) {
-            return res.json({
+            return res.status(400).json({
                 status: 'fail',
                 message: 'Invalid userType specified.',
             });
@@ -96,7 +96,7 @@ router.post('/newPost', authMiddle, async (req, res) => {
         const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
 
         if (!user)
-            return res.json({
+            return res.status(404).json({
                 status: 'fail',
                 message: 'User not found.',
             });
@@ -104,7 +104,7 @@ router.post('/newPost', authMiddle, async (req, res) => {
         user.feedPosts.unshift(savedPost._id);
         await user.save();
 
-        return res.json({
+        return res.status(200).json({
             status: 'success',
             message: 'Posted successfully',
         });
@@ -315,7 +315,7 @@ router.get('/dislike/:feedPostID', authMiddle, async (req, res) => {
     }
 })
 
-router.get('checkLiked/:feedPostID', authMiddle, async (req, res) => {
+router.get('/checkLiked/:feedPostID', authMiddle, async (req, res) => {
     try {
         const { userID } = req.user;
         const { feedPostID } = req.params;
