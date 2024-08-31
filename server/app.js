@@ -21,7 +21,6 @@ mongoose.connect(process.env.dbURL)
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.frontendURL, credentials: true }));
-
 const authRoute = require('./routes/authRoute.js');
 const feedRoute = require('./routes/feedRoute.js');
 const jobRoute = require('./routes/jobRoute.js');

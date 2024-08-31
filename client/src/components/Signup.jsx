@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
+import { toast } from 'react-toastify';
 
 export function Signup() {
     const [studentUser, setStudentUser] = useState(true);
@@ -10,6 +12,45 @@ export function Signup() {
     const [gradYear, setGradYear] = useState('');
     const [openToMentor, setOpenToMentor] = useState(false);
     const [mentorPitch, setMentorPitch] = useState('');
+
+    const API_URL = import.meta.env.VITE_backendURL;
+    const signup = async () => {
+        try {
+            const userType = studentUser ? 'Student' : 'Alumni';
+    
+            // Prepare the request body based on the user type
+            const requestBody = {
+                userType,
+                username,
+                password,
+                confirmPassword,
+                email,
+                ...(userType === 'Student' ? { branch } : {}),
+                ...(userType === 'Alumni' ? { gradYear, openToMentor, mentorPitch } : {}),
+            };
+    
+            const response = await axios.post(`${API_URL}/auth/signup`, requestBody);
+    
+            if (response.data.status === 'success') {
+                console.log('Signup successful:', response.data.message);
+                toast.success('Signup successful!');
+                localStorage.setItem('jwt_token', response.data.jwt_token);
+                //navigate to the home page
+                //display toast message
+
+            } else {
+                console.error('Signup failed:', response.data.message);
+                toast.error(`Signup failed`);
+            }
+        } catch (error) {
+            console.error('An error occurred during signup...', error);
+            toast.error(`An error occurred...`);
+        }
+    };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        signup();
+    };
 
     return (
         <div className="min-h-screen bg-[#EBE4D5] flex items-center justify-center">
@@ -133,7 +174,7 @@ export function Signup() {
                         )
                     }
 
-                    <button type="submit" className="w-full bg-[#D4B990] text-white py-2 px-4 rounded hover:bg-opacity-90">
+                    <button  className="w-full bg-[#D4B990] text-white py-2 px-4 rounded hover:bg-opacity-90" onClick={handleSubmit}>
                         Register
                     </button>
                 </form>
