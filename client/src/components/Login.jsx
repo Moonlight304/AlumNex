@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom'
 import { usernameState, userIDState, userTypeState } from '../atoms'
 import { useRecoilState, useResetRecoilState } from 'recoil';
+import { toast } from 'react-toastify';
 const backendURL = import.meta.env.VITE_backendURL;
 
 export function Login() {
@@ -16,19 +17,24 @@ export function Login() {
         
         try {
             const response = await axios.post(`${backendURL}/auth/login`, 
-                { userType, username, password },
+                { userType:userType,username: username,password:password },
             );
             const data = response.data;
 
             if (data.status === 'success') {
                 sessionStorage.setItem('jwt_token', data.jwt_token);
+                toast.success('Login successful!');
+                //do whatever we need ..
+                //navigate to the dashboard
             }
             else {
                 console.log('Error Logging in');
+                toast.error(`An error occurred `);
             }
         }
         catch (e) {
-            console.log(e.message);            
+            console.log(e.message); 
+            toast.error(`An error occurred `);           
         }
         
     }
@@ -55,11 +61,14 @@ export function Login() {
                             id="userType"
                             className="w-full p-2 bg-[#ebe4d5] border border-custom-brown rounded bg-custom-beige text-gray-700"
                             onChange={(e) => setUserType(e.target.value)}
+                            value={userType} // This ensures the select element reflects the state
                         >
-                            <option>Student</option>
-                            <option>Alumni</option>
-                            <option>Admin</option>
+                            <option value="">Select User Type</option> {/* Optional default */}
+                            <option value="Student">Student</option>
+                            <option value="Alumni">Alumni</option>
+                            <option value="Admin">Admin</option>
                         </select>
+
                     </div>
 
                     <div className="mb-4">
@@ -75,7 +84,7 @@ export function Login() {
                             placeholder="Enter your username"
                             autoComplete="on"
                             className="w-full p-2 bg-[#ebe4d5] border border-custom-brown rounded bg-custom-beige text-gray-700"
-                            onChange={(e) => setUserType(e.target.value)}
+                            onChange={(e) => setUsername(e.target.value)}
                         />
                     </div>
 
@@ -91,7 +100,7 @@ export function Login() {
                             id="password"
                             placeholder="Enter your password"
                             className="w-full mb-4 p-2 bg-[#ebe4d5] border border-custom-brown rounded bg-custom-beige text-gray-700"
-                            onChange={(e) => setUserType(e.target.value)}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
 

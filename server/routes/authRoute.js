@@ -10,6 +10,7 @@ JWT_SECRET = process.env.JWT_SECRET_CODE
 
 router.use(express.json({ limit: '10mb' }));
 router.use(cookieParser());
+
 router.use(cors({ origin: process.env.frontendURL, credentials: true }));
 
 const authMiddle = require('../middleware/authMiddle.js');
@@ -95,7 +96,7 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        const UserModel = userType === 'Student' ? Student : 'Alumni';
+        const UserModel = userType === 'Student' ? Student : Alumni;
 
         if (!UserModel) {
             return res.status(400).json({
