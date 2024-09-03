@@ -55,11 +55,11 @@ const eventSchema = new mongoose.Schema({
         required: true,
     },
     start: {
-        type: Date,
+        type: String,
         required: true,
     },
     end: {
-        type: Date,
+        type: String,
         required: true,
     },
     venue: {
@@ -79,7 +79,7 @@ const eventSchema = new mongoose.Schema({
         required: true,
         enum: ['social', 'career', 'get-together'],
     },
-    speakers: [speakerSchema],
+    speakers: [String],
     sponsors: [String],
     enrolledCount: {
         type: Number,

@@ -15,7 +15,7 @@ router.get('/', authMiddle, async (req, res) => {
     try {
         const filters = req.query.filters ? req.query.filters.split(',') : [];
 
-        const filterQuery = {};
+        let filterQuery = {};
         if (filters.length) {
             filterQuery = { tag: { $in: filters } };
         }

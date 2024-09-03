@@ -17,7 +17,7 @@ router.get('/', authMiddle, async (req, res) => {
     try {
         const filters = req.query.filters ? req.query.filters.split(',') : [];
 
-        const filterQuery = {};
+        let filterQuery = {};
         if (filters.length) {
             filterQuery = { tag: { $in: filters }};
         }
@@ -385,7 +385,7 @@ router.get('/:feedPostID/comments', authMiddle, async (req, res) => {
         return res.json({
             status: 'success',
             message: 'fetched all comments for post',
-            comments: post.comments,
+            comments: post.comments.sort({ createdAt: -1 }),
         })
     }
     catch (e) {
@@ -446,6 +446,7 @@ router.post('/:feedPostID/comments/newComment', authMiddle, async (req, res) => 
         return res.status(201).json({
             status: 'success',
             message: 'Saved comment',
+            newComment: newCommentObj
         })
     }
     catch (e) {

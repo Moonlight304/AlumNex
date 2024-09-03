@@ -18,7 +18,7 @@ router.get('/:communityID', authMiddle, async (req, res) => {
         const filters = req.query.filters ? req.query.filters.split(',') : [];
         const { communityID } = req.params;
 
-        const filterQuery = { communityID };
+        let filterQuery = { communityID };
         if (filters.length) {
             filterQuery = { tag: { $in: filters } };
         }
@@ -452,6 +452,7 @@ router.post('/:communityID/:communityPostID/comments/newComment', authMiddle, as
         return res.status(200).json({
             status: 'success',
             message: 'Saved comment',
+            newComment: newCommentObj
         })
     }
     catch (e) {
