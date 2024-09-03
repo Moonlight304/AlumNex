@@ -73,9 +73,14 @@ export function PostCard({ postID }) {
                         <p className="text-sm text-gray-600"> {timeAgo} </p>
                     </div>
                 </div>
-                <p className="mb-6">
+                <p className="mb-3 overflow-ellipsis overflow-hidden">
                     {post?.content}
                 </p>
+
+                <p className='text-sm mb-3 inline-block px-3 border-[#c7a97e] border-2 rounded-full'>
+                    {post?.tag}
+                </p>
+
                 <div className="flex justify-between items-center">
                     <div className="flex space-x-4">
                         <div className='flex gap-3 items-center '>
@@ -159,9 +164,13 @@ export function PostCard({ postID }) {
                             </svg>
                         </button>
                     </div>
-                    <button className="bg-[#c7a97e] text-white px-4 py-2 rounded-full">
-                        Read more
-                    </button>
+
+                    <Link to={`/feed/${postID}`}>
+                        <button className="bg-[#c7a97e] text-white px-4 py-2 rounded-full">
+                            Read more
+                        </button>
+                    </Link>
+
                 </div>
             </div>
         </div>
