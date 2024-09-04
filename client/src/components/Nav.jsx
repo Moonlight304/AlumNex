@@ -31,6 +31,7 @@ export function Nav() {
                     <Link to={'/profiles'} className="hover:underline"> Profiles </Link>
                     <Link to={'/community'} className="hover:underline"> Groups </Link>
                     <Link to={'/wall_of_fame'} className="hover:underline"> Wall of fame </Link>
+                    <Link to={'/directory'} className="hover:underline"> Alumni directory </Link>
                 </nav>
             </div>
             <div className="flex items-center space-x-4">

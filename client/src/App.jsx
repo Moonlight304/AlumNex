@@ -38,7 +38,7 @@ function App() {
 
                     <Route path='/user/:userID' element={<User />} />
 
-                    <Route path='/search' element={<SearchFilters />} />
+                    <Route path='/directory' element={<SearchFilters />} />
                     <Route path='/wall_of_fame' element={<WOF />} />
                     
 

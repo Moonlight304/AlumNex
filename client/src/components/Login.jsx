@@ -1,8 +1,6 @@
 import axios from 'axios'
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom'
-import { usernameState, userIDState, userTypeState } from '../atoms'
-import { useRecoilState, useResetRecoilState } from 'recoil';
 import { toast } from 'react-toastify';
 import { Navbar } from './Navbar';
 
@@ -32,7 +30,7 @@ export function Login() {
             }
             else {
                 console.log('Error Logging in');
-                toast.error(`An error occurred `);
+                toast.error(`${data.message}`);
             }
         }
         catch (e) {
@@ -67,9 +65,10 @@ export function Login() {
                                 id="userType"
                                 className="w-full p-2 bg-[#ebe4d5] border border-custom-brown rounded bg-custom-beige text-gray-700"
                                 onChange={(e) => setUserType(e.target.value)}
-                                value={userType} // This ensures the select element reflects the state
+                                value={userType}
+                                required
                             >
-                                <option value="">Select User Type</option> {/* Optional default */}
+                                <option value="">Select User Type</option>
                                 <option value="Student">Student</option>
                                 <option value="Alumni">Alumni</option>
                                 <option value="Admin">Admin</option>
@@ -91,6 +90,7 @@ export function Login() {
                                 autoComplete="on"
                                 className="w-full p-2 bg-[#ebe4d5] border border-custom-brown rounded bg-custom-beige text-gray-700"
                                 onChange={(e) => setUsername(e.target.value)}
+                                required
                             />
                         </div>
 
@@ -107,6 +107,7 @@ export function Login() {
                                 placeholder="Enter your password"
                                 className="w-full mb-4 p-2 bg-[#ebe4d5] border border-custom-brown rounded bg-custom-beige text-gray-700"
                                 onChange={(e) => setPassword(e.target.value)}
+                                required
                             />
                         </div>
 

@@ -22,14 +22,14 @@ router.get('/', authMiddle, async (req, res) => {
 
         const allJobs = await Job.find(filterQuery).sort({ createdAt: -1 });
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             count: allJobs.length,
             data: allJobs,
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -47,7 +47,7 @@ router.get('/mentors', authMiddle, async (req, res) => {
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -78,7 +78,7 @@ router.get('/:jobID', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -123,7 +123,7 @@ router.post('/newJob', authMiddle, async (req, res) => {
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -184,7 +184,7 @@ router.post('/editJob/:jobID', authMiddle, async (req, res) => {
         });
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -235,7 +235,7 @@ router.delete('/deleteJob/:jobID', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -248,33 +248,33 @@ router.get('/apply/:jobID', authMiddle, async (req, res) => {
         const { jobID } = req.params;
 
         if (!jobID)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'jobID is required',
             })
 
         if (userType !== 'Student')
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Only students can apply for jobs'
             })
 
         const job = await Job.findById(jobID);
         if (!job)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'job not found',
             })
         
         const student = await Student.findById(userID);
         if (!student)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'student not found'
             })
 
         if (job.appliedStudents.includes(userID))
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Already applied',
             })
@@ -295,13 +295,13 @@ router.get('/apply/:jobID', authMiddle, async (req, res) => {
             }
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Applied to job'
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -314,33 +314,33 @@ router.get('/dropApplication/:jobID', authMiddle, async (req, res) => {
         const { jobID } = req.params;
 
         if (!jobID)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'jobID is required',
             })
 
         if (userType !== 'Student')
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Only students can drop jobs'
             })
 
         const job = await Job.findById(jobID);
         if (!job)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'job not found',
             })
         
         const student = await Student.findById(userID);
         if (!student)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'student not found'
             })
 
         if (!job.appliedStudents.includes(userID))
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Already dropped job application',
             })
@@ -361,13 +361,13 @@ router.get('/dropApplication/:jobID', authMiddle, async (req, res) => {
             }
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Dropped job application'
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });

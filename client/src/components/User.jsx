@@ -1,10 +1,16 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 import { Nav } from './Nav';
+const backendURL = import.meta.env.VITE_backendURL;
 
 export function User() {
     const { userID } = useParams();
+    const [user, setUser] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function getUser() {
@@ -19,17 +25,16 @@ export function User() {
                 const data = response.data;
 
                 if (data.status === 'success') {
-                    navigate('/feed');
-                    toast.success('Posted!');
+                    setUser(data.user)
                 }
                 else {
-                    console.log('Error fetching posts');
-                    toast.error(`An error occurred ${data.message}`);
+                    console.log('Error getting user');
+                    // toast.error(`An error occurred ${data.message}`);
                 }
             }
             catch (e) {
                 console.log(e.message);
-                toast.error(`An error occurred `);
+                // toast.error(`An error occurred `);
             }
         }
 
@@ -38,8 +43,16 @@ export function User() {
 
     return (
         <>
-
             <Nav />
+
+            <button onClick={() => {
+                sessionStorage.clear('jwt_token');
+                navigate('/');
+                toast.success('Logged out');
+            }}>
+                Logout
+            </button>
+
             <div className="bg-beige-100 h-screen w-full flex">
                 {/* Single Card */}
                 <div className="bg-beige-50 shadow-lg rounded-lg p-6 flex flex-col lg:flex-row w-full space-y-6 lg:space-y-0 lg:space-x-6">
@@ -53,7 +66,7 @@ export function User() {
                             ></div>
                             <div>
                                 <div className='flexbox items-center space-x'>
-                                    <h1 className="text-2xl font-semibold">John Doe</h1>
+                                    <h1 className="text-2xl font-semibold"> John Doe </h1>
                                     <div className="flex items-center space-x-2">
                                         <div
                                             style={{ backgroundImage: 'url(https://t4.ftcdn.net/jpg/01/65/68/43/360_F_165684384_HYV86h5bmrPtFtKozF2wzrcKOJgiITbQ.jpg)' }}

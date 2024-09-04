@@ -17,7 +17,7 @@ router.get('/', authMiddle, async (req, res) => {
         const { userID, username, userType } = req.user;
 
         if (!userID || !username || !userType)
-            return res.status(401).json({
+            return res.json({
                 status: 'fail',
                 message: 'Please login again',
             })
@@ -25,19 +25,19 @@ router.get('/', authMiddle, async (req, res) => {
         const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
         
         if (!user)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found',
             })
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             count : user.communities.count,
             data : user.communities,
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -51,31 +51,31 @@ router.get('/:communityID', authMiddle, async (req, res) => {
         const { communityID } = req.params;
 
         if (!userID || !username || !userType)
-            return res.status(401).json({
+            return res.json({
                 status: 'fail',
                 message: 'Please login again',
             })
         
         if (!communityID)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'communityID not valid'
             })
 
         const community = await Community.findById(communityID);
         if (!community)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'community not found'
             })
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             data : community
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -89,7 +89,7 @@ router.post('/newCommunity', authMiddle, async (req, res) => {
         const { name, description } = req.body;
 
         if (!userID || !username || !userType) {
-            return res.status(401).json({
+            return res.json({
                 status: 'fail',
                 message: 'Authentication failed. Please log in again.',
             });
@@ -97,13 +97,13 @@ router.post('/newCommunity', authMiddle, async (req, res) => {
 
         const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
         if (!user)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User doesnt exist'
             })
 
         if (!name || !description) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Incomplete attributes',
             });
@@ -111,7 +111,7 @@ router.post('/newCommunity', authMiddle, async (req, res) => {
 
         const existingCommunity = await Community.findOne({ name });
         if (existingCommunity) {
-            return res.status(409).json({
+            return res.json({
                 status: 'fail',
                 message: 'A community with this name already exists.',
             });
@@ -123,12 +123,12 @@ router.post('/newCommunity', authMiddle, async (req, res) => {
         user.communities.unshift(newCommunity._id);
         await user.save();
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             data: newCommunity._id,
         });
     } catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message || 'An unexpected error occurred.',
         });
@@ -143,14 +143,14 @@ router.post('/editCommunity/:communityID', authMiddle, async (req, res) => {
         const { name, description } = req.body;
 
         if (!userID || !username || !userType) {
-            return res.status(401).json({
+            return res.json({
                 status: 'fail',
                 message: 'Authentication failed. Please log in again.',
             });
         }
 
         if (!name || !description) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Incomplete attributes',
             });
@@ -158,7 +158,7 @@ router.post('/editCommunity/:communityID', authMiddle, async (req, res) => {
 
         const community = await Community.findById(communityID);
         if (!community)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'community not found'
             })
@@ -167,12 +167,12 @@ router.post('/editCommunity/:communityID', authMiddle, async (req, res) => {
         community.description = description;
         await community.save();
 
-        return res.status(201).json({
+        return res.json({
             status: 'success',
             data: community._id,
         });
     } catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message || 'An unexpected error occurred.',
         });
@@ -186,7 +186,7 @@ router.get('/joinCommunity/:communityID', authMiddle, async (req, res) => {
         const { communityID } = req.params;
 
         if (!userID || !username || !userType) {
-            return res.status(401).json({
+            return res.json({
                 status: 'fail',
                 message: 'Authentication failed. Please log in again.',
             });
@@ -194,13 +194,13 @@ router.get('/joinCommunity/:communityID', authMiddle, async (req, res) => {
 
         const community = await Community.findById(communityID);
         if (!community)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'community not found'
             })
 
         if (community.members.includes(userID))
-            return res.status(409).json({
+            return res.json({
                 status: 'fail',
                 message: 'Already joined the community',
             })
@@ -220,12 +220,12 @@ router.get('/joinCommunity/:communityID', authMiddle, async (req, res) => {
         );
         
 
-        return res.status(201).json({
+        return res.json({
             status: 'success',
             message: 'Joined community'
         });
     } catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message || 'An unexpected error occurred.',
         });
@@ -239,7 +239,7 @@ router.get('/leaveCommunity/:communityID', authMiddle, async (req, res) => {
         const { communityID } = req.params;
 
         if (!userID || !username || !userType) {
-            return res.status(401).json({
+            return res.json({
                 status: 'fail',
                 message: 'Authentication failed. Please log in again.',
             });
@@ -247,13 +247,13 @@ router.get('/leaveCommunity/:communityID', authMiddle, async (req, res) => {
 
         const community = await Community.findById(communityID);
         if (!community)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'community not found'
             })
 
         if (!community.members.includes(userID))
-            return res.status(409).json({
+            return res.json({
                 status: 'fail',
                 message: 'Not part of community',
             })
@@ -272,12 +272,12 @@ router.get('/leaveCommunity/:communityID', authMiddle, async (req, res) => {
             { $pull: { communities: communityID } }
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Left community'
         });
     } catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message || 'An unexpected error occurred.',
         });

@@ -25,21 +25,21 @@ router.get('/:communityID', authMiddle, async (req, res) => {
 
         const community = await Community.findById(communityID);
         if (!community)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'community not found'
             })
         
         const allPosts = await CommunityPost.find(filterQuery).sort({ createdAt: -1 });
         
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             count: allPosts.length,
             data: allPosts,
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -54,7 +54,7 @@ router.get('/:communityID/:communityPostID', authMiddle, async (req, res) => {
         const { communityPostID } = req.params;
 
         if (!communityPostID)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'communityPostID not found',
             })
@@ -62,18 +62,18 @@ router.get('/:communityID/:communityPostID', authMiddle, async (req, res) => {
         const post = await CommunityPost.findById(communityPostID);
 
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'post not found',
             })
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             post: post,
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -87,13 +87,13 @@ router.post('/:communityID/newPost', authMiddle, async (req, res) => {
         const { content, tag } = req.body;
 
         if (!userID || !userType || !username || !content || !tag)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Please specify all fields.',
             });
 
         if (!['Student', 'Alumni'].includes(userType)) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Invalid userType specified.',
             });
@@ -105,14 +105,14 @@ router.post('/:communityID/newPost', authMiddle, async (req, res) => {
         const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
 
         if (!user) {
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found.',
             });
         }
 
         if (!user.communities.includes(communityID))
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Join community to post in it'
             })
@@ -120,13 +120,13 @@ router.post('/:communityID/newPost', authMiddle, async (req, res) => {
         user.communityPosts.push(savedPost._id);
         await user.save();
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Posted successfully',
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -140,13 +140,13 @@ router.post('/:communityID/editPost/:communityPostID', authMiddle, async (req, r
         const { content, tag } = req.body;
         
         if (!communityPostID)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'communityPostID not found',
             })
 
         if (!content || !tag) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Incomplete atrributes',
             })
@@ -155,13 +155,13 @@ router.post('/:communityID/editPost/:communityPostID', authMiddle, async (req, r
         const post = await CommunityPost.findById(communityPostID);
 
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'post not found',
             })
 
         if (userID !== post.userID._id.toString())
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'cannot edit others posts',
             });
@@ -172,13 +172,13 @@ router.post('/:communityID/editPost/:communityPostID', authMiddle, async (req, r
 
         await post.save();
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Edited CommunityPost',
         });
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -191,7 +191,7 @@ router.delete('/:communityID/deletePost/:communityPostID', authMiddle, async (re
         const { communityPostID } = req.params;
 
         if (!communityPostID)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'communityPostID not found',
             })
@@ -199,13 +199,13 @@ router.delete('/:communityID/deletePost/:communityPostID', authMiddle, async (re
         const post = await CommunityPost.findById(communityPostID);
 
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'post not found',
             })
 
         if (userID !== post.userID._id.toString())
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'cannot delete others posts',
             })
@@ -219,13 +219,13 @@ router.delete('/:communityID/deletePost/:communityPostID', authMiddle, async (re
             { $pull: { communityPosts: communityPostID } }
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'deleted post successfully',
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -241,7 +241,7 @@ router.get('/:communityID/like/:communityPostID', authMiddle, async (req, res) =
         const { communityPostID } = req.params;
 
         if (!communityPostID)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'communityPostID not found',
             });
@@ -249,13 +249,13 @@ router.get('/:communityID/like/:communityPostID', authMiddle, async (req, res) =
         const post = await CommunityPost.findById(communityPostID);
 
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'post not found',
             })
 
         if (post.likes.includes(userID))
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Already liked',
             })
@@ -269,14 +269,14 @@ router.get('/:communityID/like/:communityPostID', authMiddle, async (req, res) =
             }
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Incremented like count',
             newLikeCount: post.likeCount + 1,
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -289,7 +289,7 @@ router.get('/:communityID/dislike/:communityPostID', authMiddle, async (req, res
         const { communityPostID } = req.params;
 
         if (!communityPostID)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'communityPostID is required',
             })
@@ -297,13 +297,13 @@ router.get('/:communityID/dislike/:communityPostID', authMiddle, async (req, res
         const post = await CommunityPost.findById(communityPostID);
 
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'post not found',
             })
 
         if (!post.likes.includes(userID))
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'You did not like the post',
             })
@@ -317,14 +317,14 @@ router.get('/:communityID/dislike/:communityPostID', authMiddle, async (req, res
             }
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Decremented like count',
             newLikeCount: post.likeCount - 1,
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -337,13 +337,13 @@ router.get('/:communityID/:communityPostID/checkLiked', authMiddle, async (req, 
         const { communityPostID } = req.params;
 
         if (!communityPostID)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'communityPostID not found',
             })
 
         if (!userID)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'userID not found',
             })
@@ -351,25 +351,25 @@ router.get('/:communityID/:communityPostID/checkLiked', authMiddle, async (req, 
         const post = await CommunityPost.findById(communityPostID);
 
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'post not found',
             })
 
 
         if (post.likes.includes(userID))
-            return res.status(200).json({
+            return res.json({
                 status: 'success',
                 liked: JSON.stringify(true),
             })
         else
-            return res.status(400).json({
+            return res.json({
                 status: 'success',
                 liked: JSON.stringify(false),
             })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -385,7 +385,7 @@ router.get('/:communityID/:communityPostID/comments', authMiddle, async (req, re
         const { communityPostID } = req.params;
 
         if (!communityPostID)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'communityPostID not found',
             })
@@ -393,19 +393,19 @@ router.get('/:communityID/:communityPostID/comments', authMiddle, async (req, re
         const post = await CommunityPost.findById(communityPostID);
 
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'post not found',
             })
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'fetched all comments for post',
             comments: post.comments,
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -419,13 +419,13 @@ router.post('/:communityID/:communityPostID/comments/newComment', authMiddle, as
         const { comment } = req.body;
 
         if (!communityPostID)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'communityPostID not found',
             })
 
         if (!comment)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'no comment text entered',
             })
@@ -433,7 +433,7 @@ router.post('/:communityID/:communityPostID/comments/newComment', authMiddle, as
         const post = await CommunityPost.findById(communityPostID);
 
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'post not found',
             })
@@ -449,14 +449,14 @@ router.post('/:communityID/:communityPostID/comments/newComment', authMiddle, as
         post.comments.unshift(newCommentObj);
         await post.save();
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Saved comment',
             newComment: newCommentObj
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -469,14 +469,14 @@ router.delete('/:communityID/:communityPostID/comments/deleteComment/:commentID'
         const { communityPostID, commentID } = req.params;
 
         if (!communityPostID || !commentID)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Both communityPostID and commentID are required',
             });
 
         const post = await CommunityPost.findById(communityPostID);
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'CommunityPost not found',
             });
@@ -486,13 +486,13 @@ router.delete('/:communityID/:communityPostID/comments/deleteComment/:commentID'
         );
 
         if (!commentToBeDeleted)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'Comment not found',
             });
 
         if (commentToBeDeleted.userID.toString() !== userID.toString())
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'You cannot delete others comments',
             });
@@ -500,7 +500,7 @@ router.delete('/:communityID/:communityPostID/comments/deleteComment/:commentID'
         const UserModel = userType === 'Student' ? Student : Alumni;
         const user = await UserModel.findById(userID);
         if (!user)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found.',
             });
@@ -515,13 +515,13 @@ router.delete('/:communityID/:communityPostID/comments/deleteComment/:commentID'
             { $pull: { comments: commentID } }
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Comment deleted successfully',
         });
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });

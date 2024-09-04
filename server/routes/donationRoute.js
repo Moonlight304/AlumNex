@@ -21,7 +21,7 @@ router.get('/', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -62,7 +62,7 @@ router.post('/makeDonation', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });

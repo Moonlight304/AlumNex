@@ -6,7 +6,7 @@ function authMiddle(req, res, next) {
         const authHeader = req.headers.authorization;
 
         if (!authHeader || authHeader === 'Bearer null')
-            return res.status(401).json({
+            return res.json({
                 status: 'fail',
                 message: 'Not authorised',
             });
@@ -14,7 +14,7 @@ function authMiddle(req, res, next) {
         const jwt_token = authHeader.split(' ')[1];
 
         if (!jwt_token)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'no token found',
             })
@@ -26,7 +26,7 @@ function authMiddle(req, res, next) {
         next();
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message,
         })

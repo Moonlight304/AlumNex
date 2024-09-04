@@ -31,7 +31,7 @@ router.get('/', authMiddle, async (req, res) => {
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -65,7 +65,7 @@ router.get('/:feedPostID', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -78,13 +78,13 @@ router.post('/newPost', authMiddle, async (req, res) => {
         const { content, tag } = req.body;
 
         if (!userID || !userType || !username || !content || !tag)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Please specify all fields.',
             });
 
         if (!['Student', 'Alumni'].includes(userType)) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Invalid userType specified.',
             });
@@ -96,7 +96,7 @@ router.post('/newPost', authMiddle, async (req, res) => {
         const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
 
         if (!user)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found.',
             });
@@ -104,13 +104,13 @@ router.post('/newPost', authMiddle, async (req, res) => {
         user.feedPosts.unshift(savedPost._id);
         await user.save();
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Posted successfully',
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -162,7 +162,7 @@ router.post('/editPost/:feedPostID', authMiddle, async (req, res) => {
         });
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -209,7 +209,7 @@ router.delete('/deletePost/:feedPostID', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -225,7 +225,7 @@ router.get('/like/:feedPostID', authMiddle, async (req, res) => {
         const { feedPostID } = req.params;
 
         if (!feedPostID)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'feedPostID is required',
             });
@@ -233,13 +233,13 @@ router.get('/like/:feedPostID', authMiddle, async (req, res) => {
         const post = await FeedPost.findById(feedPostID);
 
         if (!post)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'post not found',
             })
 
         if (post.likes.includes(userID))
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Already liked',
             })
@@ -253,14 +253,14 @@ router.get('/like/:feedPostID', authMiddle, async (req, res) => {
             }
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Incremented like count',
             newLikeCount: post.likeCount + 1,
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -308,7 +308,7 @@ router.get('/dislike/:feedPostID', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -353,7 +353,7 @@ router.get('/checkLiked/:feedPostID', authMiddle, async (req, res) => {
             })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -389,7 +389,7 @@ router.get('/:feedPostID/comments', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -432,7 +432,7 @@ router.post('/:feedPostID/comments/newComment', authMiddle, async (req, res) => 
         
         const user = await (userType === 'Student' ? Student : Alumni).findById(userID);
         if (!user)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found.',
             });
@@ -443,14 +443,14 @@ router.post('/:feedPostID/comments/newComment', authMiddle, async (req, res) => 
         user.comments.unshift(newCommentObj);
         await user.save();
 
-        return res.status(201).json({
+        return res.json({
             status: 'success',
             message: 'Saved comment',
             newComment: newCommentObj
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -494,7 +494,7 @@ router.delete('/:feedPostID/comments/deleteComment/:commentID', authMiddle, asyn
         const UserModel = userType === 'Student' ? Student : Alumni;
         const user = await UserModel.findById(userID);
         if (!user)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found.',
             });
@@ -509,12 +509,12 @@ router.delete('/:feedPostID/comments/deleteComment/:commentID', authMiddle, asyn
             { $pull: { comments: commentID } }
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Comment deleted successfully',
         });
     } catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message,
         });

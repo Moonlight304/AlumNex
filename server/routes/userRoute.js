@@ -18,7 +18,7 @@ router.get('/follow/:destUserType/:destUserID', authMiddle, async (req, res) => 
         const { destUserType, destUserID } = req.params;
 
         if (!destUserID || !destUserType)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'destination params not found'
             })
@@ -30,7 +30,7 @@ router.get('/follow/:destUserType/:destUserID', authMiddle, async (req, res) => 
         const destUser = await DestUserModel.findById(destUserID);
 
         if (!srcUser || !destUser) {
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found'
             });
@@ -52,13 +52,13 @@ router.get('/follow/:destUserType/:destUserID', authMiddle, async (req, res) => 
         await srcUser.save();
         await destUser.save();
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Followed user'
         })
     }
     catch (e) {
-        res.status(500).json({
+        res.json({
             status: 'fail',
             message: e.message
         })
@@ -71,7 +71,7 @@ router.get('/unfollow/:destUserType/:destUserID', authMiddle, async (req, res) =
         const { destUserType, destUserID } = req.params;
 
         if (!destUserID || !destUserType)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'destination params not found'
             })
@@ -83,20 +83,20 @@ router.get('/unfollow/:destUserType/:destUserID', authMiddle, async (req, res) =
         const destUser = await DestUserModel.findById(destUserID);
 
         if (!srcUser || !destUser) {
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found'
             });
         }
 
         if (destUser.followers === undefined)
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'already unfollowed',
             })
 
         if (!destUser.followers.includes(userID))
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'not following user',
             })
@@ -111,13 +111,13 @@ router.get('/unfollow/:destUserType/:destUserID', authMiddle, async (req, res) =
         await srcUser.save();
         await destUser.save();
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Followed user'
         })
     }
     catch (e) {
-        res.status(500).json({
+        res.json({
             status: 'fail',
             message: e.message
         })
@@ -130,7 +130,7 @@ router.get('/getIsFollowing/:destUserType/:destUserID', authMiddle, async (req, 
         const { destUserType, destUserID } = req.params;
 
         if (!destUserType || !destUserID)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'destination parameters not found'
             })
@@ -142,25 +142,25 @@ router.get('/getIsFollowing/:destUserType/:destUserID', authMiddle, async (req, 
         const destUser = await DestUserModel.findById(destUserID);
 
         if (!srcUser || !destUser) {
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found'
             });
         }
 
         if (destUser.followers !== undefined && destUser.followers.includes(userID))
-            return res.status(200).json({
+            return res.json({
                 status: 'success',
                 message: JSON.stringify(true),
             })
         else 
-            return res.status(200).json({
+            return res.json({
                 status: 'success',
                 message: JSON.stringify(false),
             })
     }
     catch (e) {
-        res.status(500).json({
+        res.json({
             status: 'fail',
             message: e.message,
         })
@@ -173,7 +173,7 @@ router.post('/editProfile', authMiddle, async (req, res) => {
         const { email, bio, gender, branch, gradYear, openToMentor, mentorPitch } = req.body;
 
         if (!email || (userType === 'Student' && !branch) || (userType === 'Alumni' && (!gradYear || !openToMentor || !mentorPitch))) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Please specify all required fields.',
             });
@@ -183,7 +183,7 @@ router.post('/editProfile', authMiddle, async (req, res) => {
         const user = await UserModel.findById(userID);
         
         if (!user) {
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found.',
             });
@@ -205,7 +205,7 @@ router.post('/editProfile', authMiddle, async (req, res) => {
         );
 
         // Return success response
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Profile updated successfully.',
             data: updatedUser,
@@ -213,7 +213,7 @@ router.post('/editProfile', authMiddle, async (req, res) => {
         
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -227,13 +227,13 @@ router.delete('/deleteProfile', authMiddle, async (req, res) => {
         const UserModel = userType === 'Student' ? Student : Alumni;
         await UserModel.findByIdAndDelete(userID);
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Deleted account',
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message,
         })
@@ -245,7 +245,7 @@ router.get('/:userType/:userID', authMiddle, async (req, res) => {
         const { userType, userID } = req.params;
 
         if (!userID || !['Student', 'Alumni'].includes(userType)) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Incomplete parameters',
             });
@@ -256,18 +256,18 @@ router.get('/:userType/:userID', authMiddle, async (req, res) => {
         const user = await UserModel.findById(userID);
         
         if (!user)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found',
             });
 
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             user: user
         });
     } catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });

@@ -21,21 +21,21 @@ router.post('/signup', async (req, res) => {
         const { userType, username, password, confirmPassword, email, branch, gradYear, openToMentor, mentorPitch } = req.body;
 
         if (!userType || !username || !password || !confirmPassword || !email || (userType === 'Student' && !branch) || (userType === 'Alumni' && (!gradYear || !openToMentor || !mentorPitch))) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Please specify all required fields.',
             });
         }
 
         if (!['Student', 'Alumni'].includes(userType)) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Invalid user type. Must be either "Student" or "Alumni".',
             });
         }
 
         if (password !== confirmPassword) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Passwords do not match.',
             });
@@ -47,7 +47,7 @@ router.post('/signup', async (req, res) => {
         const existingUser = await UserModel.findOne({ username });
 
         if (existingUser) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'User already exists.',
             });
@@ -70,14 +70,14 @@ router.post('/signup', async (req, res) => {
             JWT_SECRET
         );
 
-        return res.status(201).json({
+        return res.json({
             status: 'success',
             message: 'Signup successful.',
             jwt_token,
         });
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -90,7 +90,7 @@ router.post('/login', async (req, res) => {
         const { userType, username, password } = req.body;
 
         if (!userType || !username || !password) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Please specify all fields.',
             });
@@ -99,7 +99,7 @@ router.post('/login', async (req, res) => {
         const UserModel = userType === 'Student' ? Student : Alumni;
 
         if (!UserModel) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Invalid user type. Please specify either "Student" or "Alumni".',
             });
@@ -108,7 +108,7 @@ router.post('/login', async (req, res) => {
         const existingUser = await UserModel.findOne({ username: username });
 
         if (!existingUser) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Username or Password invalid.',
             });
@@ -117,7 +117,7 @@ router.post('/login', async (req, res) => {
         const passwordValid = await bcrypt.compare(password, existingUser.passwordHash);
 
         if (!passwordValid) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Username or Password invalid.',
             });
@@ -133,7 +133,7 @@ router.post('/login', async (req, res) => {
             JWT_SECRET
         );
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Logged in successfully',
             jwt_token,
@@ -141,7 +141,7 @@ router.post('/login', async (req, res) => {
 
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });

@@ -21,7 +21,7 @@ router.get('/', authMiddle, async (req, res) => {
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -33,27 +33,27 @@ router.get('/myVentures', authMiddle, async (req, res) => {
         const { userID, userType } = req.user;
 
         if (userType !== 'Student')
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Only students can access their ventures'
             })
 
         const student = await Student.findById(userID);
         if (!student)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'User not found'
             })
 
         const myVentures = student.ventures;
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             data: myVentures
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -66,7 +66,7 @@ router.get('/:ventureID', authMiddle, async (req, res) => {
 
         const venture = await Venture.findById(ventureID);
         if (!venture)
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'Venture not found'
             })
@@ -78,7 +78,7 @@ router.get('/:ventureID', authMiddle, async (req, res) => {
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -91,7 +91,7 @@ router.post('/newVenture', authMiddle, async (req, res) => {
         const { title, description } = req.body;
 
         if (userType !== 'Student')
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Only students can start ventures'
             })
@@ -105,7 +105,7 @@ router.post('/newVenture', authMiddle, async (req, res) => {
         )
 
         if (userResult.matchedCount === 0)
-            return res.status(404).json({
+            return res.json({
               status: 'fail',
               message: 'User not found',
             });
@@ -116,7 +116,7 @@ router.post('/newVenture', authMiddle, async (req, res) => {
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -134,18 +134,18 @@ router.post('/editVenture/:ventureID', authMiddle, async (req, res) => {
             { title: title, description: description }
         )
         if (ventureResult.matchedCount === 0)
-            return res.status(404).json({
+            return res.json({
               status: 'fail',
               message: 'Venture not found',
             });
 
-        return res.status(201).json({
+        return res.json({
             status: 'success',
             message: 'edited venture'
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -161,7 +161,7 @@ router.delete('/deleteVenture/:ventureID', authMiddle, async (req, res) => {
             { _id: ventureID }
         )
         if (ventureResult.deletedCount === 0)
-            return res.status(404).json({
+            return res.json({
               status: 'fail',
               message: 'Venture not found',
             });
@@ -171,18 +171,18 @@ router.delete('/deleteVenture/:ventureID', authMiddle, async (req, res) => {
             { $pull : { ventures : ventureID} }
         )
         if (userResult.matchedCount === 0)
-            return res.status(404).json({
+            return res.json({
               status: 'fail',
               message: 'User not found',
             });
 
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'deleted venture'
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -230,7 +230,7 @@ router.get('/like/:ventureID', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -278,7 +278,7 @@ router.get('/dislike/:ventureID', authMiddle, async (req, res) => {
         })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -323,7 +323,7 @@ router.get('/:ventureID/checkLiked', authMiddle, async (req, res) => {
             })
     }
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
@@ -338,7 +338,7 @@ router.post('/invest/:ventureID', authMiddle, async (req, res) => {
 
         // Only Alumni can invest
         if (userType !== 'Alumni') {
-            return res.status(401).json({
+            return res.json({
                 status: 'fail',
                 message: 'Only Alumni can invest'
             });
@@ -346,7 +346,7 @@ router.post('/invest/:ventureID', authMiddle, async (req, res) => {
 
         // Validate input
         if (!ventureID || investAmount <= 0) {
-            return res.status(400).json({
+            return res.json({
                 status: 'fail',
                 message: 'Incomplete attributes'
             });
@@ -355,7 +355,7 @@ router.post('/invest/:ventureID', authMiddle, async (req, res) => {
         // Check if the venture exists
         const venture = await Venture.findById(ventureID);
         if (!venture) {
-            return res.status(404).json({
+            return res.json({
                 status: 'fail',
                 message: 'Venture not found'
             });
@@ -405,13 +405,13 @@ router.post('/invest/:ventureID', authMiddle, async (req, res) => {
             );
         }
 
-        return res.status(201).json({
+        return res.json({
             status: 'success',
             message: 'Invested in venture'
         });
     } 
     catch (e) {
-        return res.status(500).json({
+        return res.json({
             status: 'fail',
             message: e.message
         });
