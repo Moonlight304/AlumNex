@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
+import { usernameState, userIDState, userTypeState } from "../atoms";
+import { useRecoilState } from "recoil";
 
 export function Nav() {
+    const [globalUsername, setGlobalUsername] = useRecoilState(usernameState);
+    const [globalUserID, setGlobalUserID] = useRecoilState(userIDState);
+
     return (
         <div className="bg-[#d4b990] p-4 flex justify-between items-center">
 
@@ -19,11 +24,13 @@ export function Nav() {
                         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                     ></path>
                 </svg>
-                <span className="font-bold">Campus Connect</span>
+                <Link to={'/'}> <span className="font-bold">Campus Connect</span> </Link>
+                
                 <nav className="hidden md:flex space-x-4">
                     <Link to={'/feed'} className="hover:underline"> Feed </Link>
                     <Link to={'/profiles'} className="hover:underline"> Profiles </Link>
                     <Link to={'/community'} className="hover:underline"> Groups </Link>
+                    <Link to={'/wall_of_fame'} className="hover:underline"> Wall of fame </Link>
                 </nav>
             </div>
             <div className="flex items-center space-x-4">
@@ -83,20 +90,30 @@ export function Nav() {
                         d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                     ></path>
                 </svg>
-                <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    ></path>
-                </svg>
+
+                <Link to={`/user/${globalUserID}`}>
+                    <div className="flex justify-center items-center gap-2 hover:bg-[#b0916a] rounded-md cursor-pointer p-2">
+
+                        <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            ></path>
+                        </svg>
+
+                        {globalUsername}
+                    </div>
+                </Link>
+
+
             </div>
         </div>
     );

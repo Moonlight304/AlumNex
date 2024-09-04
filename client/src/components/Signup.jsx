@@ -40,7 +40,7 @@ export function Signup() {
             if (response.data.status === 'success') {
                 console.log('Signup successful:', response.data.message);
                 toast.success('Signup successful!');
-                localStorage.setItem('jwt_token', response.data.jwt_token);
+                sessionStorage.setItem('jwt_token', response.data.jwt_token);
                 navigate('/feed');
 
             } else {
